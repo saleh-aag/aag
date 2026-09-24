@@ -59,9 +59,9 @@ enabled: true
 
 برای انسان:
 
-name    → Amir
+<pre dir="ltr"><code>name    → Amir
 age     → 22
-enabled → true
+enabled → true</code></pre>
 
 برای برنامه چیزی شبیه <span dir="ltr">Object</span> / <span dir="ltr">Dictionary</span> است.
 
@@ -69,17 +69,17 @@ enabled → true
 
 این <span dir="ltr">Data</span> می‌تواند توسط ابزارهای مختلف خوانده شود:
 
-Docker Compose
+<pre dir="ltr"><code>Docker Compose
 GitHub Actions
 Kubernetes
 Ansible
-CI/CD systems
+CI/CD systems</code></pre>
 
 مهارت اصلی:
 
-YAML syntax
-+
-schema ابزار
+<pre dir="ltr"><code>YAML Syntax
+     +
+Tool Schema</code></pre>
 
 <a id="syntax-schema" name="syntax-schema"></a>
 
@@ -93,9 +93,9 @@ services:
 
 <span dir="ltr">YAML</span> فقط ساختار را می‌فهمد:
 
-services
+<pre dir="ltr"><code>services
 └── web
-    └── image: nginx:alpine
+    └── image: nginx:alpine</code></pre>
 
 اما معنی <code dir="ltr">services</code> و <code dir="ltr">image</code> را <span dir="ltr">Docker Compose</span> تعیین می‌کند.
 
@@ -111,15 +111,15 @@ pizza:
 
 پس یک فایل می‌تواند:
 
-YAML-valid
-ولی
-Compose-invalid
+<pre dir="ltr"><code>YAML-valid
+    but
+Compose-invalid</code></pre>
 
 باشد.
 
 مدل خطا:
 
-Layer 1: YAML Syntax
+<pre dir="ltr"><code>Layer 1: YAML Syntax
   ↓
 indentation, :, -, list, mapping
 
@@ -129,7 +129,7 @@ services, image, ports, volumes ...
 
 Layer 3: Runtime
   ↓
-image pull, port conflict, app crash ...
+image pull, port conflict, app crash ...</code></pre>
 
 <a id="structures" name="structures"></a>
 
@@ -151,9 +151,9 @@ database:
   host: database
   port: 5432
 
-database
+<pre dir="ltr"><code>database
 ├── host → database
-└── port → 5432
+└── port → 5432</code></pre>
 
 3.3. <span dir="ltr">Sequence</span>
 
@@ -170,12 +170,12 @@ services:
     ports:
       - "8080:4000"
 
-services                 Mapping
+<pre dir="ltr"><code>services                 Mapping
 └── backend              Mapping
     ├── environment      Mapping
     │   └── APP_ENV      Scalar
     └── ports            Sequence
-        └── "8080:4000"  Scalar
+        └── "8080:4000"  Scalar</code></pre>
 
 اگر بتوانی <span dir="ltr">YAML</span> را به چنین درختی تبدیل کنی، فایل‌های بزرگ خیلی قابل‌فهم‌تر می‌شوند.
 
@@ -187,10 +187,10 @@ services                 Mapping
 
 در این سند از دو <span dir="ltr">Space</span> برای هر <span dir="ltr">Level</span> استفاده می‌کنیم:
 
-Level 0 → 0 spaces
+<pre dir="ltr"><code>Level 0 → 0 spaces
 Level 1 → 2 spaces
 Level 2 → 4 spaces
-Level 3 → 6 spaces
+Level 3 → 6 spaces</code></pre>
 
 درست:
 
@@ -202,11 +202,11 @@ services:
 
 ساختار:
 
-services
+<pre dir="ltr"><code>services
 └── backend
     ├── image
     └── environment
-        └── APP_ENV
+        └── APP_ENV</code></pre>
 
 نامنظم:
 
@@ -218,8 +218,10 @@ services:
 
 قاعده عملی:
 
-برای Indentation از Space استفاده کن.
-در Editor، Tab را برای YAML به Space تبدیل کن.
+<ul dir="rtl">
+  <li>برای <span dir="ltr">Indentation</span> از <span dir="ltr">Space</span> استفاده کن.</li>
+  <li><span dir="ltr">Editor</span> را طوری تنظیم کن که <span dir="ltr">Tab</span> در فایل‌های <span dir="ltr">YAML</span> به <span dir="ltr">Space</span> تبدیل شود.</li>
+</ul>
 
 <span dir="ltr">YAML</span> الزام نمی‌کند همیشه دقیقاً دو <span dir="ltr">Space</span> استفاده شود، اما <span dir="ltr">Consistency</span> مهم است.
 
@@ -262,8 +264,7 @@ servers:
 
 قاعده خواندن:
 
-Dash دیدی؟
-→ یک item جدید در List شروع شده.
+<p dir="rtl">هر وقت در ساختار بلوکی <span dir="ltr">YAML</span> یک <code dir="ltr">-</code> در محل درست دیدی، معمولاً یک عضو جدید از <span dir="ltr">List / Sequence</span> شروع شده است.</p>
 
 <a id="values" name="values"></a>
 
@@ -327,9 +328,7 @@ password: "abc#123"
 
 قاعده امن:
 
-اگر مقدار شبیه Number، Boolean، Date یا Syntax خاص است
-ولی باید String بماند
-→ Quote بگذار.
+<p dir="rtl">اگر یک مقدار از نظر ظاهری ممکن است <span dir="ltr">Number</span>، <span dir="ltr">Boolean</span>، <span dir="ltr">Date</span> یا بخشی از <span dir="ltr">Syntax</span> تعبیر شود، اما برای پروژه باید <span dir="ltr">String</span> باقی بماند، آن را داخل <span dir="ltr">Quote</span> قرار بده.</p>
 
 <a id="comment" name="comment"></a>
 
@@ -425,9 +424,9 @@ services:
       <<: *common-env
       APP_NAME: worker
 
-&common-env → Anchor
+<pre dir="ltr"><code>&amp;common-env → Anchor
 *common-env → Alias
-<<:         → Merge
+&lt;&lt;:         → Merge</code></pre>
 
 این قابلیت مفید است، اما اگر خوانایی را برای تیم کم کند، ساده‌تر نوشتن بهتر است.
 
@@ -450,7 +449,7 @@ services:
 
 به درخت تبدیلش کن:
 
-services
+<pre dir="ltr"><code>services
 └── backend
     ├── build
     │   └── context: ./backend
@@ -459,14 +458,16 @@ services
     ├── environment
     │   └── DB_HOST: database
     └── networks [list]
-        └── app-net
+        └── app-net</code></pre>
 
 چهار سؤال:
 
-1. Parent این خط چیست؟
-2. Mapping است یا List؟
-3. Value Scalar است یا Structure؟
-4. معنی Key را YAML تعیین می‌کند یا Tool؟
+<ol dir="rtl">
+  <li><span dir="ltr">Parent</span> این خط چیست؟</li>
+  <li>ساختار فعلی <span dir="ltr">Mapping</span> است یا <span dir="ltr">List</span>؟</li>
+  <li><span dir="ltr">Value</span> یک <span dir="ltr">Scalar</span> است یا یک ساختار تو‌در‌تو؟</li>
+  <li>معنی این <span dir="ltr">Key</span> را خود <span dir="ltr">YAML</span> تعیین می‌کند یا ابزار مصرف‌کننده مثل <span dir="ltr">Docker Compose</span>؟</li>
+</ol>
 
 <a id="compose-base" name="compose-base"></a>
 
@@ -497,9 +498,9 @@ networks:
 
 <span dir="ltr">Root Key</span>های پرتکرار:
 
-services
+<pre dir="ltr"><code>services
 volumes
-networks
+networks</code></pre>
 
 در <span dir="ltr">Compose</span> جدید معمولاً نیازی به <code dir="ltr">version:</code> قدیمی نیست.
 
@@ -516,9 +517,9 @@ services:
   database:
     image: postgres:17
 
-services
+<pre dir="ltr"><code>services
 ├── backend
-└── database
+└── database</code></pre>
 
 نام <span dir="ltr">Service</span> در <span dir="ltr">DNS</span> داخلی <span dir="ltr">Compose</span> مهم است. <span dir="ltr">Backend</span> می‌تواند <span dir="ltr">Database</span> را با نام <code dir="ltr">database</code> پیدا کند.
 
@@ -554,8 +555,13 @@ services:
       context: ./backend
     image: my-backend:1.0.0
 
-image → از Image مشخص استفاده کن
-build → Image را از Source بساز
+<table dir="rtl">
+  <thead><tr><th><span dir="ltr">Key</span></th><th>معنی در <span dir="ltr">Compose</span></th></tr></thead>
+  <tbody>
+    <tr><td><code dir="ltr">image</code></td><td>از یک <span dir="ltr">Image</span> مشخص استفاده کن.</td></tr>
+    <tr><td><code dir="ltr">build</code></td><td><span dir="ltr">Image</span> را از سورس و <code dir="ltr">Dockerfile</code> بساز.</td></tr>
+  </tbody>
+</table>
 
 <a id="ports" name="ports"></a>
 
@@ -564,9 +570,9 @@ build → Image را از Source بساز
 ports:
   - "8080:80"
 
-Host :8080
+<pre dir="ltr"><code>Host :8080
    ↓
-Container :80
+Container :80</code></pre>
 
 اگر <span dir="ltr">Application</span> داخل <span dir="ltr">Container</span> روی <code dir="ltr">4000</code> است:
 
@@ -629,14 +635,14 @@ services:
 
 مدل:
 
-${VAR} در compose.yaml
-→ Interpolation در Configuration
-
-environment:
-→ Environment Container
-
-env_file:
-→ Load Environment Container از فایل
+<table dir="rtl">
+  <thead><tr><th>ساختار</th><th>نقش</th></tr></thead>
+  <tbody>
+    <tr><td><code dir="ltr">${VAR}</code> در <code dir="ltr">compose.yaml</code></td><td><span dir="ltr">Interpolation</span> هنگام پردازش تنظیمات <span dir="ltr">Compose</span>.</td></tr>
+    <tr><td><code dir="ltr">environment:</code></td><td>تعریف <span dir="ltr">Environment Variable</span>هایی که به <span dir="ltr">Container</span> داده می‌شوند.</td></tr>
+    <tr><td><code dir="ltr">env_file:</code></td><td>خواندن متغیرهای محیطی <span dir="ltr">Container</span> از یک فایل.</td></tr>
+  </tbody>
+</table>
 
 <code dir="ltr">.env.example</code> را <span dir="ltr">Commit</span> کن و <code dir="ltr">.env</code> واقعی را در <code dir="ltr">.gitignore</code> قرار بده.
 
@@ -682,9 +688,14 @@ volumes:
 
 مدل تصمیم:
 
-Database data → Named Volume
-Source code in development → Bind Mount
-Config file from host → Bind Mount، اغلب :ro
+<table dir="rtl">
+  <thead><tr><th>نیاز</th><th>انتخاب معمول</th></tr></thead>
+  <tbody>
+    <tr><td>دادهٔ پایگاه‌داده</td><td><code dir="ltr">Named Volume</code></td></tr>
+    <tr><td><span dir="ltr">Source Code</span> در محیط توسعه</td><td><code dir="ltr">Bind Mount</code></td></tr>
+    <tr><td>فایل تنظیمات از <span dir="ltr">Host</span></td><td><code dir="ltr">Bind Mount</code>، اغلب به‌صورت <code dir="ltr">:ro</code> اگر فقط خواندن لازم است.</td></tr>
+  </tbody>
+</table>
 
 <a id="networks" name="networks"></a>
 
@@ -722,13 +733,13 @@ networks:
   frontend-net:
   backend-net:
 
-Internet
+<pre dir="ltr"><code>Internet
    ↓
 Nginx
    │ frontend-net
 Backend
    │ backend-net
-Database
+Database</code></pre>
 
 این الگو کمک می‌کند <span dir="ltr">Service</span>هایی که لازم نیست مستقیم با هم ارتباط داشته باشند روی یک <span dir="ltr">Network</span> مشترک قرار نگیرند.
 
@@ -786,8 +797,7 @@ entrypoint: ["/app/start.sh"]
 
 قاعده:
 
-اگر Dockerfile رفتار درست دارد،
-بی‌دلیل command یا entrypoint را در Compose عوض نکن.
+<p dir="rtl">اگر <code dir="ltr">Dockerfile</code> رفتار اجرایی درست را تعریف کرده است، بدون نیاز مشخص <code dir="ltr">command</code> یا <code dir="ltr">entrypoint</code> را در <span dir="ltr">Compose</span> بازنویسی نکن.</p>
 
 <a id="secrets" name="secrets"></a>
 
@@ -831,7 +841,7 @@ docker compose up -d
 
 curl http://localhost:8080
 
-این ساده‌ترین ساختار برای فهم <code dir="ltr">services → service → image → ports</code> است.
+این ساده‌ترین ساختار برای فهم رابطهٔ بین <code dir="ltr">services</code>، نام هر <span dir="ltr">service</span>، <code dir="ltr">image</code> و <code dir="ltr">ports</code> است.
 
 <a id="scenario2" name="scenario2"></a>
 
@@ -862,12 +872,12 @@ volumes:
 
 ساختار:
 
-services
+<pre dir="ltr"><code>services
 ├── backend
 └── database
 
 volumes
-└── db-data
+└── db-data</code></pre>
 
 در پروژه واقعی <span dir="ltr">Password</span> را از <code dir="ltr">.env</code> یا <span dir="ltr">Secret</span> مناسب بگیر.
 
@@ -886,9 +896,9 @@ services:
     environment:
       APP_ENV: development
 
-Host ./backend
+<pre dir="ltr"><code>Host ./backend
       ⇅
-Container /app
+Container /app</code></pre>
 
 اگر <span dir="ltr">Runtime Auto Reload</span> داشته باشد، <span dir="ltr">Development</span> سریع‌تر می‌شود.
 
@@ -919,7 +929,7 @@ networks:
   frontend-net:
   backend-net:
 
-nginx
+<pre dir="ltr"><code>nginx
   │
 frontend-net
   │
@@ -927,7 +937,7 @@ backend
   │
 backend-net
   │
-database
+database</code></pre>
 
 از نظر <span dir="ltr">YAML</span> این فقط <span dir="ltr">Mapping</span> و <span dir="ltr">Sequence</span> است؛ معنی <span dir="ltr">Network</span> را <span dir="ltr">Compose</span> و <span dir="ltr">Docker</span> تعیین می‌کنند.
 
@@ -1063,8 +1073,10 @@ services:
 
 هدف:
 
-یک Configuration مشترک
-→ چند Service
+<pre dir="ltr"><code>Shared configuration
+        │
+        ▼
+Multiple services</code></pre>
 
 اما معیار اصلی خوانایی است. اگر <span dir="ltr">Anchor</span> باعث شود فهم فایل سخت‌تر شود، <span dir="ltr">Reuse</span> ارزشش را از دست می‌دهد.
 
@@ -1104,13 +1116,13 @@ services:
 
 مدل <span dir="ltr">Debug:</span>
 
-YAML parse
+<pre dir="ltr"><code>YAML parse
    ↓
 Compose validation
    ↓
 Docker runtime
    ↓
-Application runtime
+Application runtime</code></pre>
 
 <a id="validation" name="validation"></a>
 
@@ -1148,16 +1160,18 @@ docker compose \
 
 <span dir="ltr">Checklist:</span>
 
-[ ] Indentation درست است؟
-[ ] Parent هر Key درست است؟
-[ ] List و Mapping را قاطی نکرده‌ام؟
-[ ] Key در Schema Compose معتبر است؟
-[ ] Variableها Resolve شده‌اند؟
-[ ] Port اشغال نیست؟
-[ ] Service Name برای DNS درست است؟
-[ ] Volume path درست است؟
-[ ] Healthcheck کار می‌کند؟
-[ ] Application داخل Container Running است؟
+<ul dir="rtl">
+  <li>☐ <span dir="ltr">Indentation</span> درست است؟</li>
+  <li>☐ <span dir="ltr">Parent</span> هر <span dir="ltr">Key</span> درست است؟</li>
+  <li>☐ <span dir="ltr">List</span> و <span dir="ltr">Mapping</span> را با هم اشتباه نکرده‌ام؟</li>
+  <li>☐ این <span dir="ltr">Key</span> در <span dir="ltr">Compose Schema</span> معتبر است؟</li>
+  <li>☐ متغیرها درست <span dir="ltr">Resolve</span> شده‌اند؟</li>
+  <li>☐ <span dir="ltr">Port</span> موردنظر آزاد است؟</li>
+  <li>☐ نام <span dir="ltr">Service</span> برای <span dir="ltr">DNS</span> داخلی درست است؟</li>
+  <li>☐ مسیر <span dir="ltr">Volume</span> یا <span dir="ltr">Bind Mount</span> درست است؟</li>
+  <li>☐ <span dir="ltr">Healthcheck</span> واقعاً کار می‌کند؟</li>
+  <li>☐ <span dir="ltr">Application</span> داخل <span dir="ltr">Container</span> در حال اجراست؟</li>
+</ul>
 
 <a id="style" name="style"></a>
 
@@ -1185,8 +1199,8 @@ code: "0123"
 
 <span dir="ltr">Secret</span> واقعی <span dir="ltr">Commit</span> نکن
 
-.env → gitignored
-.env.example → committed
+<pre dir="ltr"><code>.env → gitignored
+.env.example → committed</code></pre>
 
 <span dir="ltr">Service Name</span> واضح
 
@@ -1382,8 +1396,10 @@ docker compose config
 
 اصل نهایی:
 
-اول Structure YAML را بخوان.
-بعد Schema ابزار را بررسی کن.
-بعد Runtime را Debug کن.
+<ol dir="rtl">
+  <li>اول ساختار <span dir="ltr">YAML</span> را بخوان.</li>
+  <li>بعد <span dir="ltr">Schema</span> ابزار را بررسی کن.</li>
+  <li>در آخر سراغ <span dir="ltr">Runtime Debugging</span> برو.</li>
+</ol>
 
 </div>
