@@ -1,56 +1,67 @@
 <div dir="rtl" align="right">
 
-# راهنمای عملی Docker برای شروع کار حرفه‌ای
+راهنمای عملی <span dir="ltr">Docker</span> برای شروع کار حرفه‌ای
 
-این سند برای کسی نوشته شده که می‌خواهد Docker را از پایه بفهمد و بعد بتواند بدون حفظ‌کردن کورکورانه‌ی دستورها، سناریوهای واقعی را تحلیل و اجرا کند.
+این سند برای کسی نوشته شده که می‌خواهد <span dir="ltr">Docker</span> را از پایه بفهمد و بعد بتواند بدون حفظ‌کردن کورکورانه‌ی دستورها، سناریوهای واقعی را تحلیل و اجرا کند.
 
-هدف این فایل آموزش `Dockerfile` یا `Docker Compose` نیست؛ آن دو در سند دوم بررسی می‌شوند. اینجا ابتدا باید خود Docker، `Image`، `Container`، `Port`، `Storage`، `Network` و چرخه‌ی اجرای Container را درست بفهمیم.
-
----
+هدف این فایل آموزش <code dir="ltr">Dockerfile</code> یا <code dir="ltr">Docker Compose</code> نیست؛ آن دو در سند دوم بررسی می‌شوند. اینجا ابتدا باید خود <span dir="ltr">Docker</span>، <code dir="ltr">Image</code>، <code dir="ltr">Container</code>، <code dir="ltr">Port</code>، <code dir="ltr">Storage</code>، <code dir="ltr">Network</code> و چرخه‌ی اجرای <span dir="ltr">Container</span> را درست بفهمیم.
 
 <a id="toc"></a>
-<details open>
-<summary>
 
-## فهرست مطالب
+فهرست مطالب
 
-</summary>
+<span dir="ltr">Docker</span> چه مسئله‌ای را حل می‌کند؟
 
-1\. [Docker چه مسئله‌ای را حل می‌کند؟](#docker-problem)  
-2\. [Container با Virtual Machine چه فرقی دارد؟](#container-vm)  
-3\. [معماری Docker](#architecture)  
-4\. [Image و Container](#image-container)  
-5\. [اولین اجرای Docker](#first-run)  
-6\. [دستور docker run را درست بخوانیم](#docker-run)  
-7\. [چرخه‌ی زندگی Container](#lifecycle)  
-8\. [ورود به Container و اجرای دستور با exec](#exec)  
-9\. [مشاهده وضعیت، Log و Inspect](#observe)  
-10\. [Port و Port Mapping](#ports)  
-11\. [Environment Variable](#environment)  
-12\. [Storage: writable layer، docker cp، Bind Mount و Volume](#storage)  
-13\. [سناریوی عملی docker cp در برابر Bind Mount](#cp-vs-bind)  
-14\. [Docker Network](#network)  
-15\. [مدیریت Image، Tag و Registry](#images)  
-16\. [docker commit چه زمانی مفید است؟](#commit)  
-17\. [save/load در برابر export/import](#archive)  
-18\. [پاک‌سازی Container و Image](#cleanup)  
-19\. [خطاهای رایج و روش فکر کردن برای Debug](#errors)  
-20\. [تمرین نهایی](#lab)  
-21\. [Cheat Sheet](#cheatsheet)  
-22\. [بعد از این سند چه بخوانیم؟](#next)  
+<span dir="ltr">Container</span> با <span dir="ltr">Virtual Machine</span> چه فرقی دارد؟
 
-</details>
+معماری <span dir="ltr">Docker</span>
 
----
+<span dir="ltr">Image</span> و <span dir="ltr">Container</span>
+
+اولین اجرای <span dir="ltr">Docker</span>
+
+دستور <span dir="ltr">docker run</span> را درست بخوانیم
+
+چرخه‌ی زندگی <span dir="ltr">Container</span>
+
+ورود به <span dir="ltr">Container</span> و اجرای دستور با <span dir="ltr">exec</span>
+
+مشاهده وضعیت، <span dir="ltr">Log</span> و <span dir="ltr">Inspect</span>
+
+<span dir="ltr">Port</span> و <span dir="ltr">Port Mapping</span>
+
+<span dir="ltr">Environment Variable</span>
+
+<span dir="ltr">Storage: writable layer</span>، <span dir="ltr">docker cp</span>، <span dir="ltr">Bind Mount</span> و <span dir="ltr">Volume</span>
+
+سناریوی عملی <span dir="ltr">docker cp</span> در برابر <span dir="ltr">Bind Mount</span>
+
+<span dir="ltr">Docker Network</span>
+
+مدیریت <span dir="ltr">Image</span>، <span dir="ltr">Tag</span> و <span dir="ltr">Registry</span>
+
+<span dir="ltr">docker commit</span> چه زمانی مفید است؟
+
+<span dir="ltr">save/load</span> در برابر <span dir="ltr">export/import</span>
+
+پاک‌سازی <span dir="ltr">Container</span> و <span dir="ltr">Image</span>
+
+خطاهای رایج و روش فکر کردن برای <span dir="ltr">Debug</span>
+
+تمرین نهایی
+
+<span dir="ltr">Cheat Sheet</span>
+
+بعد از این سند چه بخوانیم؟
 
 <a id="docker-problem"></a>
-## 1. Docker چه مسئله‌ای را حل می‌کند؟
 
-یک برنامه معمولاً فقط «کد» نیست. ممکن است برای اجرا به نسخه‌ی مشخصی از `Python` یا `Node.js`، Libraryها، Environment Variableها، فایل Configuration و ابزارهای سیستم‌عاملی نیاز داشته باشد.
+1. <span dir="ltr">Docker</span> چه مسئله‌ای را حل می‌کند؟
 
-اگر این وابستگی‌ها را مستقیماً روی هر Server یا Laptop نصب کنیم، خیلی زود با تفاوت نسخه‌ها و تداخل Packageها روبه‌رو می‌شویم. Docker کمک می‌کند **محیط اجرای برنامه را به شکل استاندارد بسته‌بندی و اجرا کنیم**.
+یک برنامه معمولاً فقط «کد» نیست. ممکن است برای اجرا به نسخه‌ی مشخصی از <code dir="ltr">Python</code> یا <code dir="ltr">Node.js</code>، <span dir="ltr">Library</span>ها، <span dir="ltr">Environment Variable</span>ها، فایل <span dir="ltr">Configuration</span> و ابزارهای سیستم‌عاملی نیاز داشته باشد.
 
-```text
+اگر این وابستگی‌ها را مستقیماً روی هر <span dir="ltr">Server</span> یا <span dir="ltr">Laptop</span> نصب کنیم، خیلی زود با تفاوت نسخه‌ها و تداخل <span dir="ltr">Package</span>ها روبه‌رو می‌شویم. <span dir="ltr">Docker</span> کمک می‌کند محیط اجرای برنامه را به شکل استاندارد بسته‌بندی و اجرا کنیم.
+
 Application
 + Runtime
 + Dependencies
@@ -59,18 +70,15 @@ Application
       Image
         ↓
    Container
-```
 
-Docker قرار نیست Host OS را حذف کند. Container روی Host اجرا می‌شود و از Kernel آن استفاده می‌کند، اما Processها، File System و Network خودش را به شکل ایزوله‌تری می‌بیند.
-
----
+<span dir="ltr">Docker</span> قرار نیست <span dir="ltr">Host OS</span> را حذف کند. <span dir="ltr">Container</span> روی <span dir="ltr">Host</span> اجرا می‌شود و از <span dir="ltr">Kernel</span> آن استفاده می‌کند، اما <span dir="ltr">Process</span>ها، <span dir="ltr">File System</span> و <span dir="ltr">Network</span> خودش را به شکل ایزوله‌تری می‌بیند.
 
 <a id="container-vm"></a>
-## 2. Container با Virtual Machine چه فرقی دارد؟
 
-Virtual Machine معمولاً یک Guest OS کامل دارد:
+2. <span dir="ltr">Container</span> با <span dir="ltr">Virtual Machine</span> چه فرقی دارد؟
 
-```text
+<span dir="ltr">Virtual Machine</span> معمولاً یک <span dir="ltr">Guest OS</span> کامل دارد:
+
 Hardware
 └── Host OS
     └── Hypervisor
@@ -78,11 +86,9 @@ Hardware
         │   └── Application
         └── Guest OS B
             └── Application
-```
 
-Containerها معمولاً Kernel Host را به اشتراک می‌گذارند:
+<span dir="ltr">Container</span>ها معمولاً <span dir="ltr">Kernel Host</span> را به اشتراک می‌گذارند:
 
-```text
 Hardware
 └── Host OS
     └── Docker Engine
@@ -90,24 +96,19 @@ Hardware
         │   └── Application
         └── Container B
             └── Application
-```
 
-Containerها معمولاً سریع‌تر Start می‌شوند و سبک‌ترند، اما این نتیجه را نگیریم که `Container = VM کوچک`. این دو ابزار دقیقاً یک مسئله را حل نمی‌کنند.
-
----
+<span dir="ltr">Container</span>ها معمولاً سریع‌تر <span dir="ltr">Start</span> می‌شوند و سبک‌ترند، اما این نتیجه را نگیریم که <code dir="ltr">Container = VM کوچک</code>. این دو ابزار دقیقاً یک مسئله را حل نمی‌کنند.
 
 <a id="architecture"></a>
-## 3. معماری Docker
+
+3. معماری <span dir="ltr">Docker</span>
 
 وقتی می‌نویسیم:
 
-```bash
 docker run nginx
-```
 
 چند جزء درگیر هستند:
 
-```text
 You
  │
  ▼
@@ -120,147 +121,115 @@ Docker Daemon / Engine
  ├── Containers
  ├── Networks
  └── Volumes
-```
 
-`Docker CLI` همان دستورهایی است که می‌نویسیم. `Docker Daemon` عملیات واقعی را انجام می‌دهد. `Registry` هم محل نگهداری Imageهاست و Docker Hub یکی از Registryهای شناخته‌شده است.
+<code dir="ltr">Docker CLI</code> همان دستورهایی است که می‌نویسیم. <code dir="ltr">Docker Daemon</code> عملیات واقعی را انجام می‌دهد. <code dir="ltr">Registry</code> هم محل نگهداری <span dir="ltr">Image</span>هاست و <span dir="ltr">Docker Hub</span> یکی از <span dir="ltr">Registry</span>های شناخته‌شده است.
 
-برای ادامه فرض می‌کنیم Docker نصب شده است. بررسی سریع:
+برای ادامه فرض می‌کنیم <span dir="ltr">Docker</span> نصب شده است. بررسی سریع:
 
-```bash
 docker --version
 docker info
-```
-
----
 
 <a id="image-container"></a>
-## 4. Image و Container
 
-### Image
+4. <span dir="ltr">Image</span> و <span dir="ltr">Container</span>
 
-Image یک الگوی آماده برای ساخت Container است:
+<span dir="ltr">Image</span>
 
-```text
+<span dir="ltr">Image</span> یک الگوی آماده برای ساخت <span dir="ltr">Container</span> است:
+
 ubuntu:24.04
 nginx:alpine
 python:3.13-slim
 node:22
-```
 
-Image خودش Process در حال اجرا نیست.
+<span dir="ltr">Image</span> خودش <span dir="ltr">Process</span> در حال اجرا نیست.
 
-### Container
+<span dir="ltr">Container</span>
 
-Container نمونه‌ای است که از روی Image ساخته و اجرا می‌شود:
+<span dir="ltr">Container</span> نمونه‌ای است که از روی <span dir="ltr">Image</span> ساخته و اجرا می‌شود:
 
-```text
 nginx:alpine
      │
      ├── web-1
      ├── web-2
      └── web-3
-```
 
 مدل ذهنی:
 
-```text
 Image
 = الگو / بسته‌ی ساخت Container
 
 Container
 = Instance قابل اجرا از Image
-```
 
-### Layer
+<span dir="ltr">Layer</span>
 
-Imageها از Layerها ساخته می‌شوند. Layerهای مشترک می‌توانند بین Imageها reuse شوند. برای مشاهده‌ی مصرف فضا:
+<span dir="ltr">Image</span>ها از <span dir="ltr">Layer</span>ها ساخته می‌شوند. <span dir="ltr">Layer</span>های مشترک می‌توانند بین <span dir="ltr">Image</span>ها <span dir="ltr">reuse</span> شوند. برای مشاهده‌ی مصرف فضا:
 
-```bash
 docker system df
 docker system df -v
-```
-
----
 
 <a id="first-run"></a>
-## 5. اولین اجرای Docker
 
-```bash
+5. اولین اجرای <span dir="ltr">Docker</span>
+
 docker run hello-world
-```
 
 مدل آموزشی:
 
-```text
 docker run hello-world
         │
         ├── Image محلی وجود دارد؟
         ├── اگر نه: Pull
         ├── Create Container
         └── Start Container
-```
 
-پس `docker run` را فقط «روشن کردن» در نظر نگیر؛ معمولاً Container جدید می‌سازد و آن را اجرا می‌کند.
-
----
+پس <code dir="ltr">docker run</code> را فقط «روشن کردن» در نظر نگیر؛ معمولاً <span dir="ltr">Container</span> جدید می‌سازد و آن را اجرا می‌کند.
 
 <a id="docker-run"></a>
-## 6. دستور `docker run` را درست بخوانیم
+
+6. دستور <code dir="ltr">docker run</code> را درست بخوانیم
 
 فرم کلی:
 
-```bash
 docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
-```
 
 اجرای ساده:
 
-```bash
 docker run nginx
-```
 
-Background:
+<span dir="ltr">Background:</span>
 
-```bash
 docker run -d nginx
-```
 
 نام‌گذاری:
 
-```bash
 docker run -d --name web nginx
-```
 
-Interactive shell:
+<span dir="ltr">Interactive shell:</span>
 
-```bash
 docker run -it ubuntu bash
-```
 
-- `-i` ورودی تعاملی را باز نگه می‌دارد.
-- `-t` Terminal مجازی ایجاد می‌کند.
-- `bash` Command داخل Container است.
+<code dir="ltr">-i</code> ورودی تعاملی را باز نگه می‌دارد.
 
-Container موقت:
+<code dir="ltr">-t</code> <span dir="ltr">Terminal</span> مجازی ایجاد می‌کند.
 
-```bash
+<code dir="ltr">bash</code> <span dir="ltr">Command</span> داخل <span dir="ltr">Container</span> است.
+
+<span dir="ltr">Container</span> موقت:
+
 docker run --rm ubuntu echo "hello"
-```
 
-اگر Image یک Command پیش‌فرض داشته باشد، Command انتهای `docker run` می‌تواند آن را Override کند. مثلاً:
+اگر <span dir="ltr">Image</span> یک <span dir="ltr">Command</span> پیش‌فرض داشته باشد، <span dir="ltr">Command</span> انتهای <code dir="ltr">docker run</code> می‌تواند آن را <span dir="ltr">Override</span> کند. مثلاً:
 
-```bash
 docker run -it myapp bash
-```
 
-ممکن است به‌جای Application، Bash را اجرا کند.
-
----
+ممکن است به‌جای <span dir="ltr">Application</span>، <span dir="ltr">Bash</span> را اجرا کند.
 
 <a id="lifecycle"></a>
-## 7. چرخه‌ی زندگی Container
 
-```text
+7. چرخه‌ی زندگی <span dir="ltr">Container</span>
+
 Created
    │
    ▼
@@ -272,11 +241,9 @@ Stopped / Exited
    │
    ├── start ─────→ Running
    └── rm ────────→ Deleted
-```
 
 دستورهای اصلی:
 
-```bash
 docker ps
 docker ps -a
 docker stop web
@@ -284,95 +251,74 @@ docker start web
 docker restart web
 docker rm web
 docker rm -f web
-```
 
 تفاوت مهم:
 
-```text
 docker run
 → معمولاً Container جدید می‌سازد و اجرا می‌کند
 
 docker start
 → همان Container موجود را دوباره اجرا می‌کند
-```
 
-`-f` یعنی Force. در Lab مفید است، اما در محیط واقعی بدون دلیل از آن استفاده نکن.
-
----
+<code dir="ltr">-f</code> یعنی <span dir="ltr">Force.</span> در <span dir="ltr">Lab</span> مفید است، اما در محیط واقعی بدون دلیل از آن استفاده نکن.
 
 <a id="exec"></a>
-## 8. ورود به Container و اجرای دستور با `exec`
 
-فرض کن `web` Running است.
+8. ورود به <span dir="ltr">Container</span> و اجرای دستور با <code dir="ltr">exec</code>
 
-اجرای یک Command:
+فرض کن <code dir="ltr">web</code> <span dir="ltr">Running</span> است.
 
-```bash
+اجرای یک <span dir="ltr">Command:</span>
+
 docker exec web ls -lah /
-```
 
-ورود به Bash:
+ورود به <span dir="ltr">Bash:</span>
 
-```bash
 docker exec -it web bash
-```
 
-اگر Bash موجود نبود:
+اگر <span dir="ltr">Bash</span> موجود نبود:
 
-```bash
 docker exec -it web sh
-```
 
 تفاوت:
 
-```text
 docker start web
 → خود Container را Running می‌کند
 
 docker exec -it web bash
 → داخل Container Running یک Process جدید باز می‌کند
-```
 
-روی Container متوقف‌شده ابتدا باید `start` انجام شود.
-
----
+روی <span dir="ltr">Container</span> متوقف‌شده ابتدا باید <code dir="ltr">start</code> انجام شود.
 
 <a id="observe"></a>
-## 9. مشاهده وضعیت، Log و Inspect
+
+9. مشاهده وضعیت، <span dir="ltr">Log</span> و <span dir="ltr">Inspect</span>
 
 قبل از حذف و ساخت مجدد همه‌چیز، اطلاعات جمع کن.
 
-```bash
 docker logs web
 docker logs -f web
 docker top web
 docker stats
 docker inspect web
 docker diff web
-```
 
-`docker inspect` برای دیدن مواردی مثل IP، Network، Mount، Environment Variable، Port Binding، State و Image بسیار مهم است.
-
----
+<code dir="ltr">docker inspect</code> برای دیدن مواردی مثل <span dir="ltr">IP</span>، <span dir="ltr">Network</span>، <span dir="ltr">Mount</span>، <span dir="ltr">Environment Variable</span>، <span dir="ltr">Port Binding</span>، <span dir="ltr">State</span> و <span dir="ltr">Image</span> بسیار مهم است.
 
 <a id="ports"></a>
-## 10. Port و Port Mapping
 
-فرض کن Application داخل Container روی Port `3000` گوش می‌دهد.
+10. <span dir="ltr">Port</span> و <span dir="ltr">Port Mapping</span>
 
-فرم Publish:
+فرض کن <span dir="ltr">Application</span> داخل <span dir="ltr">Container</span> روی <span dir="ltr">Port</span> <code dir="ltr">3000</code> گوش می‌دهد.
 
-```bash
+فرم <span dir="ltr">Publish:</span>
+
 -p HOST_PORT:CONTAINER_PORT
-```
 
 مثال:
 
-```bash
 docker run -p 2000:3000 myapp
-```
 
-```text
 Browser / curl
       ↓
 Host :2000
@@ -382,304 +328,253 @@ Docker
 Container :3000
       ↓
 Application
-```
 
-Host Port لازم نیست با Container Port یکی باشد:
+<span dir="ltr">Host Port</span> لازم نیست با <span dir="ltr">Container Port</span> یکی باشد:
 
-```bash
 docker run -p 5000:3000 myapp
-```
 
-### `0.0.0.0` داخل Application
+<code dir="ltr">0.0.0.0</code> داخل <span dir="ltr">Application</span>
 
-اگر Application فقط روی `127.0.0.1` داخل Container گوش دهد، معمولاً از بیرون Container قابل دسترسی نیست. برای مثال Flask:
+اگر <span dir="ltr">Application</span> فقط روی <code dir="ltr">127.0.0.1</code> داخل <span dir="ltr">Container</span> گوش دهد، معمولاً از بیرون <span dir="ltr">Container</span> قابل دسترسی نیست. برای مثال <span dir="ltr">Flask:</span>
 
-```python
 app.run(host="0.0.0.0", port=4000)
-```
 
-### `port is already allocated`
+<code dir="ltr">port is already allocated</code>
 
-اگر Host Port اشغال باشد:
+اگر <span dir="ltr">Host Port</span> اشغال باشد:
 
-```bash
 docker ps
 ss -tulpn
-```
 
-یا Process قبلی را Stop کن یا Host Port دیگری انتخاب کن.
+یا <span dir="ltr">Process</span> قبلی را <span dir="ltr">Stop</span> کن یا <span dir="ltr">Host Port</span> دیگری انتخاب کن.
 
-### `EXPOSE` با `-p` یکی نیست
+<code dir="ltr">EXPOSE</code> با <code dir="ltr">-p</code> یکی نیست
 
-`EXPOSE` بیشتر Port مورد انتظار Image را بیان می‌کند. Publish واقعی با `-p` یا تنظیم معادل در Compose انجام می‌شود.
-
----
+<code dir="ltr">EXPOSE</code> بیشتر <span dir="ltr">Port</span> مورد انتظار <span dir="ltr">Image</span> را بیان می‌کند. <span dir="ltr">Publish</span> واقعی با <code dir="ltr">-p</code> یا تنظیم معادل در <span dir="ltr">Compose</span> انجام می‌شود.
 
 <a id="environment"></a>
-## 11. Environment Variable
 
-```bash
+11. <span dir="ltr">Environment Variable</span>
+
 docker run \
   -e APP_ENV=development \
   -e PORT=3000 \
   myapp
-```
 
-فایل env:
+فایل <span dir="ltr">env:</span>
 
-```bash
 docker run --env-file .env myapp
-```
 
-نمونه `.env`:
+نمونه <code dir="ltr">.env</code>:
 
-```ini
 APP_ENV=development
 PORT=3000
 DB_HOST=database
-```
 
-برای Repository عمومی، Secret واقعی را Commit نکن. `.env.example` برای نمایش نام Variableها مناسب است.
-
----
+برای <span dir="ltr">Repository</span> عمومی، <span dir="ltr">Secret</span> واقعی را <span dir="ltr">Commit</span> نکن. <code dir="ltr">.env.example</code> برای نمایش نام <span dir="ltr">Variable</span>ها مناسب است.
 
 <a id="storage"></a>
-## 12. Storage: writable layer، `docker cp`، Bind Mount و Volume
 
-### Writable Layer
+12. <span dir="ltr">Storage: writable layer</span>، <code dir="ltr">docker cp</code>، <span dir="ltr">Bind Mount</span> و <span dir="ltr">Volume</span>
 
-فایلی که داخل Container می‌سازی در File System همان Container قرار می‌گیرد. Stop/Start معمولاً آن را حفظ می‌کند، اما با حذف Container روی آن برای Data مهم حساب نکن.
+<span dir="ltr">Writable Layer</span>
 
-### `docker cp`
+فایلی که داخل <span dir="ltr">Container</span> می‌سازی در <span dir="ltr">File System</span> همان <span dir="ltr">Container</span> قرار می‌گیرد. <span dir="ltr">Stop/Start</span> معمولاً آن را حفظ می‌کند، اما با حذف <span dir="ltr">Container</span> روی آن برای <span dir="ltr">Data</span> مهم حساب نکن.
 
-```bash
+<code dir="ltr">docker cp</code>
+
 docker cp file.txt web:/tmp/file.txt
 docker cp web:/tmp/file.txt ./file.txt
-```
 
 قاعده:
 
-```text
 docker cp
 = Copy
 ≠ Sync
-```
 
-### Bind Mount
+<span dir="ltr">Bind Mount</span>
 
-```bash
 docker run -v "$PWD":/app myapp
-```
 
-```text
 Host directory
      ⇅
 Container directory
-```
 
-برای Development مفید است؛ تغییر Host داخل Container دیده می‌شود. اما حذف یا تغییر فایل Mount‌شده داخل Container می‌تواند روی Host هم اثر بگذارد.
+برای <span dir="ltr">Development</span> مفید است؛ تغییر <span dir="ltr">Host</span> داخل <span dir="ltr">Container</span> دیده می‌شود. اما حذف یا تغییر فایل <span dir="ltr">Mount</span>‌شده داخل <span dir="ltr">Container</span> می‌تواند روی <span dir="ltr">Host</span> هم اثر بگذارد.
 
-### Named Volume
+<span dir="ltr">Named Volume</span>
 
-```bash
 docker volume create db-data
 
 docker run \
   -v db-data:/var/lib/postgresql/data \
   postgres
-```
 
 بررسی:
 
-```bash
 docker volume ls
 docker volume inspect db-data
-```
 
-### tmpfs
+<span dir="ltr">tmpfs</span>
 
-برای Data موقتی در Memory:
+برای <span dir="ltr">Data</span> موقتی در <span dir="ltr">Memory:</span>
 
-```bash
 docker run --tmpfs /cache nginx
-```
 
 مدل نهایی:
 
-```text
 Writable layer → وابسته به عمر Container
 Bind Mount     → مسیر واقعی Host
 Named Volume   → Storage مدیریت‌شده Docker
 tmpfs          → Memory و موقت
-```
-
----
 
 <a id="cp-vs-bind"></a>
-## 13. سناریوی عملی `docker cp` در برابر Bind Mount
 
-فرض کنیم روی Host فایل `wilson.c` داریم.
+13. سناریوی عملی <code dir="ltr">docker cp</code> در برابر <span dir="ltr">Bind Mount</span>
 
-Container اول:
+فرض کنیم روی <span dir="ltr">Host</span> فایل <code dir="ltr">wilson.c</code> داریم.
 
-```bash
+<span dir="ltr">Container</span> اول:
+
 docker run -it -d --name copied ubuntu bash
 docker cp wilson.c copied:/home/wilson.c
-```
 
 از این لحظه دو نسخه مستقل داریم.
 
-Container دوم:
+<span dir="ltr">Container</span> دوم:
 
-```bash
 docker run -it -d \
   --name mounted \
   -v "$PWD":/code \
   gcc bash
-```
 
-داخل Container:
+داخل <span dir="ltr">Container:</span>
 
-```bash
 docker exec -it mounted bash
 cd /code
 gcc -o main wilson.c
 ./main
-```
 
-چون `/code` Bind Mount است، فایل `main` روی Host هم دیده می‌شود.
+چون <code dir="ltr">/code</code> <span dir="ltr">Bind Mount</span> است، فایل <code dir="ltr">main</code> روی <span dir="ltr">Host</span> هم دیده می‌شود.
 
-حالا فایل Host را تغییر بده. Container اول نسخه قبلی را می‌بیند:
+حالا فایل <span dir="ltr">Host</span> را تغییر بده. <span dir="ltr">Container</span> اول نسخه قبلی را می‌بیند:
 
-```bash
 docker exec copied cat /home/wilson.c
-```
 
-Container دوم نسخه جدید را می‌بیند:
+<span dir="ltr">Container</span> دوم نسخه جدید را می‌بیند:
 
-```bash
 docker exec mounted cat /code/wilson.c
-```
 
-| ویژگی | `docker cp` | Bind Mount |
-|---|---|---|
-| انتقال فایل | بله | بله |
-| ارتباط زنده | خیر | بله |
-| تغییر Host دیده می‌شود | خیر | بله |
-| مناسب Development | محدود | بله |
+ویژگی
 
----
+<code dir="ltr">docker cp</code>
+
+<span dir="ltr">Bind Mount</span>
+
+انتقال فایل
+
+بله
+
+بله
+
+ارتباط زنده
+
+خیر
+
+بله
+
+تغییر <span dir="ltr">Host</span> دیده می‌شود
+
+خیر
+
+بله
+
+مناسب <span dir="ltr">Development</span>
+
+محدود
+
+بله
 
 <a id="network"></a>
-## 14. Docker Network
+
+14. <span dir="ltr">Docker Network</span>
 
 مشاهده:
 
-```bash
 docker network ls
-```
 
-Network اختصاصی:
+<span dir="ltr">Network</span> اختصاصی:
 
-```bash
 docker network create app-net
-```
 
-دو Container روی یک Network:
+دو <span dir="ltr">Container</span> روی یک <span dir="ltr">Network:</span>
 
-```bash
 docker run -d --name database --network app-net postgres
 
 docker run -d --name backend --network app-net my-backend
-```
 
-در User-defined Network، بهتر است از نام Container/Service استفاده کنیم:
+در <span dir="ltr">User-defined Network</span>، بهتر است از نام <span dir="ltr">Container/Service</span> استفاده کنیم:
 
-```text
 database:5432
-```
 
-نه IP موقت:
+نه <span dir="ltr">IP</span> موقت:
 
-```text
 172.18.0.5:5432
-```
 
 بررسی:
 
-```bash
 docker network inspect app-net
-```
 
 اتصال و جداسازی:
 
-```bash
 docker network connect app-net web
 docker network disconnect app-net web
-```
 
-Driverهایی که فعلاً باید اسمشان را بشناسی:
+<span dir="ltr">Driver</span>هایی که فعلاً باید اسمشان را بشناسی:
 
-```text
 bridge   → رایج روی یک Host
 host     → استفاده نزدیک‌تر از Network Host
 none     → بدون Network معمول Docker
 overlay  → سناریوهای چند Host
 macvlan  → سناریوهای خاص شبکه
-```
 
-برای Junior مهم‌ترین بخش فعلاً `bridge` و User-defined Network است.
-
----
+برای <span dir="ltr">Junior</span> مهم‌ترین بخش فعلاً <code dir="ltr">bridge</code> و <span dir="ltr">User-defined Network</span> است.
 
 <a id="images"></a>
-## 15. مدیریت Image، Tag و Registry
 
-```bash
+15. مدیریت <span dir="ltr">Image</span>، <span dir="ltr">Tag</span> و <span dir="ltr">Registry</span>
+
 docker pull nginx:alpine
 docker image ls
 docker rmi nginx:alpine
-```
 
-Tag:
+<span dir="ltr">Tag:</span>
 
-```bash
 docker tag myapp:1.0.0 myapp:stable
-```
 
-Tag الزاماً Image را کپی نمی‌کند؛ یک Reference جدید می‌سازد.
+<span dir="ltr">Tag</span> الزاماً <span dir="ltr">Image</span> را کپی نمی‌کند؛ یک <span dir="ltr">Reference</span> جدید می‌سازد.
 
-الگوی رایج نام Image:
+الگوی رایج نام <span dir="ltr">Image:</span>
 
-```text
 REGISTRY/OWNER/IMAGE:TAG
-```
-
----
 
 <a id="commit"></a>
-## 16. `docker commit` چه زمانی مفید است؟
 
-```bash
+16. <code dir="ltr">docker commit</code> چه زمانی مفید است؟
+
 docker run -it --name lab ubuntu bash
-```
 
-داخل Container:
+داخل <span dir="ltr">Container:</span>
 
-```bash
 apt update
 apt install -y curl
 touch /home/example.txt
 exit
-```
 
-ساخت Image از وضعیت فعلی:
+ساخت <span dir="ltr">Image</span> از وضعیت فعلی:
 
-```bash
 docker commit lab mylab:1.0.0
-```
 
-```text
 ubuntu
   ↓
 lab container
@@ -687,190 +582,173 @@ lab container
 docker commit
   ↓
 mylab:1.0.0
-```
 
-برای Lab و Snapshot سریع مفید است، اما برای پروژه واقعی روش اصلی نیست؛ چون مراحل ساخت داخل Code ثبت نشده‌اند. در پروژه واقعی `Dockerfile` روش قابل‌تکرارتر است.
-
----
+برای <span dir="ltr">Lab</span> و <span dir="ltr">Snapshot</span> سریع مفید است، اما برای پروژه واقعی روش اصلی نیست؛ چون مراحل ساخت داخل <span dir="ltr">Code</span> ثبت نشده‌اند. در پروژه واقعی <code dir="ltr">Dockerfile</code> روش قابل‌تکرارتر است.
 
 <a id="archive"></a>
-## 17. `save/load` در برابر `export/import`
+
+17. <code dir="ltr">save/load</code> در برابر <code dir="ltr">export/import</code>
 
 دو خانواده جدا داریم.
 
-### Image
+<span dir="ltr">Image</span>
 
-```text
 Image
   ↓ docker save
 tar
   ↓ docker load
 Image
-```
 
-```bash
 docker save myapp:1.0.0 -o myapp.tar
 docker load -i myapp.tar
-```
 
-### Container File System
+<span dir="ltr">Container File System</span>
 
-```text
 Container
   ↓ docker export
 tar
   ↓ docker import
 New Image
-```
 
-```bash
 docker export mycontainer -o container.tar
 docker import container.tar imported-app:1.0.0
-```
 
-| موضوع | `save/load` | `export/import` |
-|---|---|---|
-| مبدأ | Image | Container |
-| هدف | انتقال/Restore Image | File System Container |
-| Layerهای Image | حفظ می‌شوند | ساختار اصلی Layerها حفظ نمی‌شود |
-| Runtime metadata | مناسب‌تر برای Restore | ممکن است از دست برود |
+موضوع
 
-Image ساخته‌شده با `docker import` ممکن است Command پیش‌فرض مناسب نداشته باشد. در آن حالت باید Command را صریح بدهی:
+<code dir="ltr">save/load</code>
 
-```bash
+<code dir="ltr">export/import</code>
+
+مبدأ
+
+<span dir="ltr">Image</span>
+
+<span dir="ltr">Container</span>
+
+هدف
+
+انتقال/<span dir="ltr">Restore Image</span>
+
+<span dir="ltr">File System Container</span>
+
+<span dir="ltr">Layer</span>های <span dir="ltr">Image</span>
+
+حفظ می‌شوند
+
+ساختار اصلی <span dir="ltr">Layer</span>ها حفظ نمی‌شود
+
+<span dir="ltr">Runtime metadata</span>
+
+مناسب‌تر برای <span dir="ltr">Restore</span>
+
+ممکن است از دست برود
+
+<span dir="ltr">Image</span> ساخته‌شده با <code dir="ltr">docker import</code> ممکن است <span dir="ltr">Command</span> پیش‌فرض مناسب نداشته باشد. در آن حالت باید <span dir="ltr">Command</span> را صریح بدهی:
+
 docker run -it imported-app:1.0.0 bash
-```
-
----
 
 <a id="cleanup"></a>
-## 18. پاک‌سازی Container و Image
 
-Container:
+18. پاک‌سازی <span dir="ltr">Container</span> و <span dir="ltr">Image</span>
 
-```bash
+<span dir="ltr">Container:</span>
+
 docker rm container-name
 docker rm $(docker ps -a -q)
 docker rm -f $(docker ps -a -q)
-```
 
-Image:
+<span dir="ltr">Image:</span>
 
-```bash
 docker rmi image-name
 docker rmi $(docker images -q)
-```
 
 این دستور معمولاً اشتباه مفهومی است:
 
-```bash
 docker rmi $(docker ps -a -q)
-```
 
-چون `docker ps` شناسه Container می‌دهد ولی `docker rmi` برای Image است.
+چون <code dir="ltr">docker ps</code> شناسه <span dir="ltr">Container</span> می‌دهد ولی <code dir="ltr">docker rmi</code> برای <span dir="ltr">Image</span> است.
 
-Prune:
+<span dir="ltr">Prune:</span>
 
-```bash
 docker container prune
 docker image prune
 docker volume prune
 docker network prune
 docker system prune
-```
 
-قبل از `volume prune` مطمئن شو Data مهمی حذف نمی‌شود.
-
----
+قبل از <code dir="ltr">volume prune</code> مطمئن شو <span dir="ltr">Data</span> مهمی حذف نمی‌شود.
 
 <a id="errors"></a>
-## 19. خطاهای رایج و روش فکر کردن برای Debug
 
-### `command not found`
+19. خطاهای رایج و روش فکر کردن برای <span dir="ltr">Debug</span>
 
-Image `ubuntu` الزاماً Python، Node یا GCC ندارد. Image مناسب را انتخاب کن یا Package لازم را نصب کن.
+<code dir="ltr">command not found</code>
 
-### `docker` داخل Container وجود ندارد
+<span dir="ltr">Image</span> <code dir="ltr">ubuntu</code> الزاماً <span dir="ltr">Python</span>، <span dir="ltr">Node</span> یا <span dir="ltr">GCC</span> ندارد. <span dir="ltr">Image</span> مناسب را انتخاب کن یا <span dir="ltr">Package</span> لازم را نصب کن.
 
-Docker Engine روی Host اجرا می‌شود؛ Container معمولی الزاماً Docker CLI ندارد.
+<code dir="ltr">docker</code> داخل <span dir="ltr">Container</span> وجود ندارد
 
-### `exec` روی Container متوقف‌شده
+<span dir="ltr">Docker Engine</span> روی <span dir="ltr">Host</span> اجرا می‌شود؛ <span dir="ltr">Container</span> معمولی الزاماً <span dir="ltr">Docker CLI</span> ندارد.
 
-```bash
+<code dir="ltr">exec</code> روی <span dir="ltr">Container</span> متوقف‌شده
+
 docker start web
 docker exec -it web bash
-```
 
-### Port درست Publish شده ولی برنامه جواب نمی‌دهد
+<span dir="ltr">Port</span> درست <span dir="ltr">Publish</span> شده ولی برنامه جواب نمی‌دهد
 
 این سه سؤال را بررسی کن:
 
-```text
 Application Running است؟
 داخل Container روی چه Portی Listen می‌کند؟
 روی 0.0.0.0 گوش می‌دهد یا فقط 127.0.0.1؟
-```
 
 ابزارها:
 
-```bash
 docker logs web
 docker inspect web
-```
 
-### تغییر Host داخل Container دیده نمی‌شود
+تغییر <span dir="ltr">Host</span> داخل <span dir="ltr">Container</span> دیده نمی‌شود
 
-بپرس فایل با `docker cp`/`COPY` آمده یا Bind Mount است.
+بپرس فایل با <code dir="ltr">docker cp</code>/<code dir="ltr">COPY</code> آمده یا <span dir="ltr">Bind Mount</span> است.
 
-### مدل Debug پنج مرحله‌ای
+مدل <span dir="ltr">Debug</span> پنج مرحله‌ای
 
-```text
 1. State   → docker ps -a
 2. Logs    → docker logs
 3. Config  → docker inspect
 4. Process / Port
 5. Storage / Network
-```
 
-قبل از `rm -f` همه‌چیز، این مراحل اطلاعات بسیار بیشتری می‌دهند.
-
----
+قبل از <code dir="ltr">rm -f</code> همه‌چیز، این مراحل اطلاعات بسیار بیشتری می‌دهند.
 
 <a id="lab"></a>
-## 20. تمرین نهایی
 
-Nginx:
+20. تمرین نهایی
 
-```bash
+<span dir="ltr">Nginx:</span>
+
 docker run -d \
   --name web-lab \
   -p 8080:80 \
   nginx:alpine
-```
 
 تست:
 
-```bash
 docker ps
 curl http://localhost:8080
-```
 
-Log و Inspect:
+<span dir="ltr">Log</span> و <span dir="ltr">Inspect:</span>
 
-```bash
 docker logs web-lab
 docker inspect web-lab
-```
 
 ورود:
 
-```bash
 docker exec -it web-lab sh
-```
 
-حالا Bind Mount:
+حالا <span dir="ltr">Bind Mount:</span>
 
-```bash
 docker rm -f web-lab
 mkdir -p nginx-lab
 echo '<h1>Hello from host</h1>' > nginx-lab/index.html
@@ -880,33 +758,26 @@ docker run -d \
   -p 8080:80 \
   -v "$PWD/nginx-lab":/usr/share/nginx/html:ro \
   nginx:alpine
-```
 
 تست:
 
-```bash
 curl http://localhost:8080
-```
 
-Network:
+<span dir="ltr">Network:</span>
 
-```bash
 docker network create lab-net
 docker run -d --name helper --network lab-net alpine sleep 3600
 docker network connect lab-net web-lab
 docker network inspect lab-net
-```
 
-اگر بتوانی بعد از این تمرین `Image`، `Container`، `run`، `start`، `exec`، Port Mapping، Bind Mount، Network، `inspect` و `logs` را توضیح دهی، آماده‌ی سند دوم هستی.
-
----
+اگر بتوانی بعد از این تمرین <code dir="ltr">Image</code>، <code dir="ltr">Container</code>، <code dir="ltr">run</code>، <code dir="ltr">start</code>، <code dir="ltr">exec</code>، <span dir="ltr">Port Mapping</span>، <span dir="ltr">Bind Mount</span>، <span dir="ltr">Network</span>، <code dir="ltr">inspect</code> و <code dir="ltr">logs</code> را توضیح دهی، آماده‌ی سند دوم هستی.
 
 <a id="cheatsheet"></a>
-## 21. Cheat Sheet
 
-### Container
+21. <span dir="ltr">Cheat Sheet</span>
 
-```bash
+<span dir="ltr">Container</span>
+
 docker ps
 docker ps -a
 docker run IMAGE
@@ -920,54 +791,43 @@ docker exec -it NAME bash
 docker logs -f NAME
 docker inspect NAME
 docker stats
-```
 
-### Image
+<span dir="ltr">Image</span>
 
-```bash
 docker pull IMAGE
 docker image ls
 docker rmi IMAGE
 docker tag SOURCE TARGET
 docker save IMAGE -o image.tar
 docker load -i image.tar
-```
 
-### Storage
+<span dir="ltr">Storage</span>
 
-```bash
 docker cp file.txt container:/tmp/file.txt
 docker volume create data
 docker volume ls
 docker volume inspect data
 docker run -v data:/data IMAGE
 docker run -v "$PWD":/app IMAGE
-```
 
-### Network
+<span dir="ltr">Network</span>
 
-```bash
 docker network ls
 docker network create app-net
 docker network inspect app-net
 docker network connect app-net CONTAINER
 docker network disconnect app-net CONTAINER
-```
 
-### Port و Environment
+<span dir="ltr">Port</span> و <span dir="ltr">Environment</span>
 
-```bash
 docker run -p 8080:80 IMAGE
 docker run -e APP_ENV=dev IMAGE
 docker run --env-file .env IMAGE
-```
-
----
 
 <a id="next"></a>
-## 22. بعد از این سند چه بخوانیم؟
 
-```text
+22. بعد از این سند چه بخوانیم؟
+
 Docker پایه
    ↓
 Dockerfile
@@ -979,8 +839,7 @@ Docker Compose
 Multi-container Application
    ↓
 CI/CD و Deployment
-```
 
-سند دوم از همین نقطه شروع می‌شود: ساخت Image قابل‌تکرار با `Dockerfile` و مدیریت چند Service با `Docker Compose`.
+سند دوم از همین نقطه شروع می‌شود: ساخت <span dir="ltr">Image</span> قابل‌تکرار با <code dir="ltr">Dockerfile</code> و مدیریت چند <span dir="ltr">Service</span> با <code dir="ltr">Docker Compose</code>.
 
 </div>
