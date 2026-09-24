@@ -1328,9 +1328,6 @@ Application runtime
 
 ساختار YAML
 ```yaml
-
-</div>
-
 key: value
 
 parent:
@@ -1346,21 +1343,9 @@ list_of_objects:
   - name: two
     port: 3001
 
-<div dir="rtl" align="right">
-
-Service با Image
-
-</div>
-
 services:
   web:
     image: nginx:alpine
-
-<div dir="rtl" align="right">
-
-Service با Build
-
-</div>
 
 services:
   backend:
@@ -1368,44 +1353,16 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
-<div dir="rtl" align="right">
-
-Port
-
-</div>
-
 ports:
   - "8080:80"
-
-<div dir="rtl" align="right">
-
-Environment
-
-</div>
 
 environment:
   APP_ENV: production
   DB_HOST: database
 
-<div dir="rtl" align="right">
-
-Variable از <code dir="ltr">.env</code>
-
-</div>
-
 image: "myapp:${IMAGE_TAG}"
 
-<div dir="rtl" align="right">
-
-</div>
-
 IMAGE_TAG=1.0.0
-
-<div dir="rtl" align="right">
-
-Named Volume
-
-</div>
 
 services:
   database:
@@ -1415,29 +1372,11 @@ services:
 volumes:
   db-data:
 
-<div dir="rtl" align="right">
-
-Bind Mount
-
-</div>
-
 volumes:
   - ./backend:/app
 
-<div dir="rtl" align="right">
-
-Read-only
-
-</div>
-
 volumes:
   - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-
-<div dir="rtl" align="right">
-
-Network
-
-</div>
 
 services:
   backend:
@@ -1447,20 +1386,8 @@ services:
 networks:
   app-net:
 
-<div dir="rtl" align="right">
-
-depends_on
-
-</div>
-
 depends_on:
   - database
-
-<div dir="rtl" align="right">
-
-Healthcheck
-
-</div>
 
 healthcheck:
   test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
@@ -1468,15 +1395,8 @@ healthcheck:
   timeout: 3s
   retries: 10
 
-<div dir="rtl" align="right">
-
-Restart
-
-</div>
-
 restart: unless-stopped
 
-<div dir="rtl" align="right">
 ```
 دستورات پایه
 
