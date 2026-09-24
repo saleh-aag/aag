@@ -1,479 +1,224 @@
 <div dir="rtl" align="right">
 
-قواعد <span dir="ltr">YAML</span> برای <span dir="ltr">Docker Compose</span> و پروژه‌های واقعی <span dir="ltr">DevOps</span>
+راهنمای عملی <span dir="ltr">YAML</span> و <span dir="ltr">Docker Compose</span> — الگوهای آماده برای کپی
 
-این سند <span dir="ltr">YAML</span> را به‌عنوان یک زبان مستقل آموزش می‌دهد، اما تمرکز اصلی روی جایی است که یک <span dir="ltr">Junior</span> بیشترین برخورد را با آن دارد: <code dir="ltr">Docker Compose</code> و <span dir="ltr">Configuration</span> پروژه‌های واقعی.
+این فایل برای خواندن خطی از اول تا آخر طراحی نشده است. هدف این است که وقتی در یک پروژه واقعی به چیزی مثل <code dir="ltr">ports</code>، <code dir="ltr">volumes</code>، <code dir="ltr">.env</code>، <code dir="ltr">networks</code> یا <code dir="ltr">healthcheck</code> نیاز داشتی، از فهرست مستقیم به همان بخش بروی، نمونه را Copy کنی، مقادیر مشخص‌شده را تغییر بدهی و فایل را <span dir="ltr">Validate</span> کنی.
 
-هدف این نیست که ده‌ها قابلیت کم‌استفاده <span dir="ltr">YAML</span> را حفظ کنیم. هدف این است که بتوانیم یک فایل واقعی را بخوانیم، بنویسیم، <span dir="ltr">Validate</span> کنیم و خطایش را پیدا کنیم.
+روش استفاده از این سند: <span dir="ltr">Find → Copy → Change → Validate → Run</span>
+
+Find the pattern
+      |
+      v
+Copy the example
+      |
+      v
+Change project values
+      |
+      v
+docker compose config
+      |
+      v
+docker compose up -d
+
+هر <span dir="ltr">Code Block</span> مستقل نوشته شده تا در <span dir="ltr">GitHub</span> بتوانی با دکمه‌ی <span dir="ltr">Copy</span> همان بلوک را برداری و در پروژه خودت استفاده کنی.
 
 <a id="toc" name="toc"></a>
 
 فهرست مطالب
 
 <ol dir="rtl" align="right">
-  <li><a href="#what"><span dir="ltr">YAML</span> چیست و چه چیزی نیست؟</a></li>
-  <li><a href="#syntax-schema"><span dir="ltr">Syntax</span> با <span dir="ltr">Schema</span> فرق دارد</a></li>
-  <li><a href="#structures">سه ساختار اصلی <span dir="ltr">YAML</span></a></li>
-  <li><a href="#indentation"><span dir="ltr">Indentation</span></a></li>
-  <li><a href="#colon-dash"><span dir="ltr">Colon</span> و <span dir="ltr">Dash</span></a></li>
-  <li><a href="#values">نوع مقدارها و <span dir="ltr">Quote</span></a></li>
-  <li><a href="#comment"><span dir="ltr">Comment</span></a></li>
-  <li><a href="#multiline">متن چندخطی با | و &gt;</a></li>
-  <li><a href="#flow"><span dir="ltr">Flow Style</span> با <code dir="ltr">{}</code> و <code dir="ltr">[]</code></a></li>
-  <li><a href="#anchors"><span dir="ltr">Anchor</span>، <span dir="ltr">Alias</span> و <span dir="ltr">Merge</span></a></li>
-  <li><a href="#reading">روش خواندن یک <span dir="ltr">YAML</span> پیچیده</a></li>
-  <li><a href="#compose-base">ساختار پایه <span dir="ltr">compose.yaml</span></a></li>
-  <li><a href="#services"><span dir="ltr">services</span></a></li>
-  <li><a href="#build-image"><span dir="ltr">build</span> و <span dir="ltr">image</span></a></li>
-  <li><a href="#ports"><span dir="ltr">ports</span></a></li>
-  <li><a href="#env"><span dir="ltr">environment</span>، .<span dir="ltr">env</span> و <span dir="ltr">env_file</span></a></li>
-  <li><a href="#volumes"><span dir="ltr">volumes</span> و انواع <span dir="ltr">Mount</span></a></li>
-  <li><a href="#networks"><span dir="ltr">networks</span></a></li>
-  <li><a href="#health"><span dir="ltr">depends_on</span> و <span dir="ltr">healthcheck</span></a></li>
-  <li><a href="#runtime"><span dir="ltr">restart</span>، <span dir="ltr">command</span> و <span dir="ltr">entrypoint</span></a></li>
-  <li><a href="#secrets"><span dir="ltr">Secret</span>ها را کجا نگذاریم؟</a></li>
-  <li><a href="#scenario1">سناریو 1: <span dir="ltr">Nginx</span> تک‌سرویسی</a></li>
-  <li><a href="#scenario2">سناریو 2: <span dir="ltr">Backend</span> + <span dir="ltr">Database</span></a></li>
-  <li><a href="#scenario3">سناریو 3: <span dir="ltr">Development</span> با <span dir="ltr">Bind Mount</span></a></li>
-  <li><a href="#scenario4">سناریو 4: <span dir="ltr">Network</span> اختصاصی</a></li>
-  <li><a href="#scenario5">سناریو 5: .<span dir="ltr">env</span> برای <span dir="ltr">Environment</span>های مختلف</a></li>
-  <li><a href="#scenario6">سناریو 6: <span dir="ltr">Healthcheck</span> واقعی</a></li>
-  <li><a href="#override"><span dir="ltr">Compose</span> چندفایلی و <span dir="ltr">Override</span></a></li>
-  <li><a href="#reuse"><span dir="ltr">Reuse</span> با <span dir="ltr">x-</span> و <span dir="ltr">Anchor</span></a></li>
-  <li><a href="#error-types">سه نوع خطا: <span dir="ltr">YAML</span>، <span dir="ltr">Compose Schema</span> و <span dir="ltr">Runtime</span></a></li>
-  <li><a href="#validation"><span dir="ltr">Validation</span> و <span dir="ltr">Debug</span></a></li>
-  <li><a href="#style"><span dir="ltr">Style Guide</span> پیشنهادی</a></li>
-  <li><a href="#practice">تمرین مرحله‌ای</a></li>
-  <li><a href="#cheatsheet"><span dir="ltr">Cheat Sheet</span></a></li>
+  <li><a href="#workflow">روش استفاده سریع از این فایل</a></li>
+  <li><a href="#yaml-core">قواعد پایه <span dir="ltr">YAML</span> در یک نگاه</a></li>
+  <li><a href="#indentation"><span dir="ltr">Indentation</span> و ساختار تو‌در‌تو</a></li>
+  <li><a href="#mapping-list"><span dir="ltr">Mapping</span> و <span dir="ltr">List</span></a></li>
+  <li><a href="#quotes"><span dir="ltr">Quote</span> و مقدارهای حساس</a></li>
+  <li><a href="#multiline">متن چندخطی با <code dir="ltr">|</code> و <code dir="ltr">&gt;</code></a></li>
+  <li><a href="#compose-minimal">الگوی حداقلی <code dir="ltr">compose.yaml</code></a></li>
+  <li><a href="#image">استفاده از <code dir="ltr">image</code></a></li>
+  <li><a href="#build">استفاده از <code dir="ltr">build</code></a></li>
+  <li><a href="#ports"><code dir="ltr">ports</code> — انتشار پورت</a></li>
+  <li><a href="#environment"><code dir="ltr">environment</code></a></li>
+  <li><a href="#dot-env"><code dir="ltr">.env</code> و <span dir="ltr">Variable Interpolation</span></a></li>
+  <li><a href="#env-file"><code dir="ltr">env_file</code></a></li>
+  <li><a href="#named-volume"><span dir="ltr">Named Volume</span></a></li>
+  <li><a href="#bind-mount"><span dir="ltr">Bind Mount</span></a></li>
+  <li><a href="#readonly-mount"><span dir="ltr">Read-only Mount</span></a></li>
+  <li><a href="#anonymous-volume"><span dir="ltr">Anonymous Volume</span></a></li>
+  <li><a href="#network"><span dir="ltr">Network</span> اختصاصی</a></li>
+  <li><a href="#two-networks">تفکیک <span dir="ltr">Frontend</span> و <span dir="ltr">Backend Network</span></a></li>
+  <li><a href="#depends-on"><code dir="ltr">depends_on</code></a></li>
+  <li><a href="#healthcheck"><code dir="ltr">healthcheck</code> و <code dir="ltr">service_healthy</code></a></li>
+  <li><a href="#restart-command"><code dir="ltr">restart</code>، <code dir="ltr">command</code> و <code dir="ltr">entrypoint</code></a></li>
+  <li><a href="#anchors"><span dir="ltr">Anchor</span> و <span dir="ltr">Reuse</span></a></li>
+  <li><a href="#template-nginx">قالب کامل 1 — <span dir="ltr">Nginx</span></a></li>
+  <li><a href="#template-backend-db">قالب کامل 2 — <span dir="ltr">Backend + PostgreSQL</span></a></li>
+  <li><a href="#template-env-db">قالب کامل 3 — <span dir="ltr">Backend + PostgreSQL + .env</span></a></li>
+  <li><a href="#template-dev">قالب کامل 4 — محیط <span dir="ltr">Development</span> با <span dir="ltr">Bind Mount</span></a></li>
+  <li><a href="#template-networks">قالب کامل 5 — سه سرویس با دو <span dir="ltr">Network</span></a></li>
+  <li><a href="#override"><span dir="ltr">Compose Override</span> برای <span dir="ltr">Development</span></a></li>
+  <li><a href="#validation"><span dir="ltr">Validate</span> و <span dir="ltr">Debug</span></a></li>
+  <li><a href="#errors">سه نوع خطای مهم</a></li>
+  <li><a href="#copy-checklist"><span dir="ltr">Copy Checklist</span> قبل از استفاده</a></li>
+  <li><a href="#cheatsheet"><span dir="ltr">Cheat Sheet</span> نهایی</a></li>
 </ol>
 
-<a id="what" name="what"></a>
+<a id="workflow" name="workflow"></a>
 
-1. <span dir="ltr">YAML</span> چیست و چه چیزی نیست؟
+1. روش استفاده سریع از این فایل
 
-<code dir="ltr">YAML</code> روشی برای نوشتن داده ساختاریافته است.
+برای هر الگو چهار مرحله داریم:
 
-name: Amir
-age: 22
-enabled: true
+<table dir="rtl">
+  <thead><tr><th>مرحله</th><th>کار</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>نمونه مناسب را از فهرست پیدا کن.</td></tr>
+    <tr><td>2</td><td><span dir="ltr">Code Block</span> را کامل <span dir="ltr">Copy</span> کن.</td></tr>
+    <tr><td>3</td><td>فقط مقادیر پروژه خودت مثل نام سرویس، مسیر، پورت و نام <span dir="ltr">Volume</span> را تغییر بده.</td></tr>
+    <tr><td>4</td><td>قبل از اجرا، <code dir="ltr">docker compose config</code> بزن.</td></tr>
+  </tbody>
+</table>
 
-برای انسان:
+دستور پایه برای بررسی فایل:
 
-<pre dir="ltr"><code>name    → Amir
-age     → 22
-enabled → true</code></pre>
+docker compose config
 
-برای برنامه چیزی شبیه <span dir="ltr">Object</span> / <span dir="ltr">Dictionary</span> است.
+اگر درست بود:
 
-<span dir="ltr">YAML</span> خودش <span dir="ltr">Docker</span> را اجرا نمی‌کند، <span dir="ltr">Network</span> نمی‌سازد و <span dir="ltr">Container</span> ایجاد نمی‌کند. فقط <span dir="ltr">Data</span> را با <span dir="ltr">Syntax</span> مشخص بیان می‌کند.
+docker compose up -d
 
-این <span dir="ltr">Data</span> می‌تواند توسط ابزارهای مختلف خوانده شود:
+برای دیدن وضعیت:
 
-<pre dir="ltr"><code>Docker Compose
-GitHub Actions
-Kubernetes
-Ansible
-CI/CD systems</code></pre>
+docker compose ps
 
-مهارت اصلی:
+برای دیدن لاگ‌ها:
 
-<pre dir="ltr"><code>YAML Syntax
-     +
-Tool Schema</code></pre>
+docker compose logs -f
 
-<a id="syntax-schema" name="syntax-schema"></a>
+<a id="yaml-core" name="yaml-core"></a>
 
-2. <span dir="ltr">Syntax</span> با <span dir="ltr">Schema</span> فرق دارد
+2. قواعد پایه <span dir="ltr">YAML</span> در یک نگاه
 
-این یکی از مهم‌ترین مفاهیم کل سند است.
+سه ساختمان اصلی که تقریباً همه‌جا می‌بینی:
 
-services:
-  web:
-    image: nginx:alpine
-
-<span dir="ltr">YAML</span> فقط ساختار را می‌فهمد:
-
-<pre dir="ltr"><code>services
-└── web
-    └── image: nginx:alpine</code></pre>
-
-اما معنی <code dir="ltr">services</code> و <code dir="ltr">image</code> را <span dir="ltr">Docker Compose</span> تعیین می‌کند.
-
-این <span dir="ltr">YAML</span> هم از نظر <span dir="ltr">Syntax</span> معتبر است:
-
-pizza:
-  cheese: lots
-  olives:
-    - black
-    - green
-
-ولی <span dir="ltr">Compose</span> چنین <span dir="ltr">Schema</span>ای ندارد.
-
-پس یک فایل می‌تواند:
-
-<pre dir="ltr"><code>YAML-valid
-    but
-Compose-invalid</code></pre>
-
-باشد.
-
-مدل خطا:
-
-<pre dir="ltr"><code>Layer 1: YAML Syntax
-  ↓
-indentation, :, -, list, mapping
-
-Layer 2: Tool Schema
-  ↓
-services, image, ports, volumes ...
-
-Layer 3: Runtime
-  ↓
-image pull, port conflict, app crash ...</code></pre>
-
-<a id="structures" name="structures"></a>
-
-3. سه ساختار اصلی <span dir="ltr">YAML</span>
-
-تقریباً بیشتر <span dir="ltr">YAML</span>هایی که در <span dir="ltr">DevOps</span> می‌بینی از سه نوع اصلی ساخته شده‌اند.
-
-3.1. <span dir="ltr">Scalar</span>
+مقدار ساده — <span dir="ltr">Scalar</span>
 
 name: backend
-replicas: 2
+port: 4000
 enabled: true
-timeout: 2.5
-optional: null
 
-3.2. <span dir="ltr">Mapping</span>
+کلید و مقدار — <span dir="ltr">Mapping</span>
 
 database:
   host: database
   port: 5432
 
-<pre dir="ltr"><code>database
-├── host → database
-└── port → 5432</code></pre>
-
-3.3. <span dir="ltr">Sequence</span>
+لیست — <span dir="ltr">Sequence</span>
 
 ports:
   - "8080:80"
   - "8443:443"
 
-ترکیب
-
-services:
-  backend:
-    environment:
-      APP_ENV: production
-    ports:
-      - "8080:4000"
-
-<pre dir="ltr"><code>services                 Mapping
-└── backend              Mapping
-    ├── environment      Mapping
-    │   └── APP_ENV      Scalar
-    └── ports            Sequence
-        └── "8080:4000"  Scalar</code></pre>
-
-اگر بتوانی <span dir="ltr">YAML</span> را به چنین درختی تبدیل کنی، فایل‌های بزرگ خیلی قابل‌فهم‌تر می‌شوند.
+مدل ذهنی: علامت <code dir="ltr">:</code> معمولاً <span dir="ltr">Key</span> را از مقدارش جدا می‌کند و <code dir="ltr">-</code> معمولاً یک عضو جدید از <span dir="ltr">List</span> را شروع می‌کند.
 
 <a id="indentation" name="indentation"></a>
 
-4. <span dir="ltr">Indentation</span>
+3. <span dir="ltr">Indentation</span> و ساختار تو‌در‌تو
 
-فاصله ابتدای خط در <span dir="ltr">YAML</span> معنی ساختاری دارد.
+الگوی پیشنهادی این سند: دو Space برای هر Level.
 
-در این سند از دو <span dir="ltr">Space</span> برای هر <span dir="ltr">Level</span> استفاده می‌کنیم:
-
-<pre dir="ltr"><code>Level 0 → 0 spaces
-Level 1 → 2 spaces
-Level 2 → 4 spaces
-Level 3 → 6 spaces</code></pre>
-
-درست:
+درست — قابل الگوبرداری
 
 services:
   backend:
-    image: my-backend
+    image: my-backend:1.0.0
     environment:
       APP_ENV: production
 
-ساختار:
-
-<pre dir="ltr"><code>services
-└── backend
-    ├── image
-    └── environment
-        └── APP_ENV</code></pre>
-
-نامنظم:
+اشتباه
 
 services:
    backend:
-    image: my-backend
-
-ممکن است <span dir="ltr">Error</span> یا ساختار اشتباه ایجاد کند.
+    image: my-backend:1.0.0
 
 قاعده عملی:
 
-<ul dir="rtl">
-  <li>برای <span dir="ltr">Indentation</span> از <span dir="ltr">Space</span> استفاده کن.</li>
-  <li><span dir="ltr">Editor</span> را طوری تنظیم کن که <span dir="ltr">Tab</span> در فایل‌های <span dir="ltr">YAML</span> به <span dir="ltr">Space</span> تبدیل شود.</li>
-</ul>
+برای <span dir="ltr">Indentation</span> از <span dir="ltr">Space</span> استفاده کن.
 
-<span dir="ltr">YAML</span> الزام نمی‌کند همیشه دقیقاً دو <span dir="ltr">Space</span> استفاده شود، اما <span dir="ltr">Consistency</span> مهم است.
+<span dir="ltr">Tab</span> را برای فایل‌های <span dir="ltr">YAML</span> به <span dir="ltr">Space</span> تبدیل کن.
 
-<a id="colon-dash" name="colon-dash"></a>
+همه‌ی فرزندان یک <span dir="ltr">Parent</span> باید Level یکسان داشته باشند.
 
-5. <span dir="ltr">Colon</span> و <span dir="ltr">Dash</span>
+<a id="mapping-list" name="mapping-list"></a>
 
-<code dir="ltr">:</code>
+4. <span dir="ltr">Mapping</span> و <span dir="ltr">List</span> را با هم اشتباه نکن
 
-<span dir="ltr">Key</span> را از <span dir="ltr">Value</span> جدا می‌کند:
+<span dir="ltr">Mapping</span>
 
-name: backend
+environment:
+  APP_ENV: production
+  DB_HOST: database
 
-اگر بعد از <span dir="ltr">Colon</span> مقدار مستقیم نباشد:
-
-database:
-
-یعنی زیر آن <span dir="ltr">Structure</span> دیگری می‌آید:
-
-database:
-  host: db
-  port: 5432
-
-<code dir="ltr">-</code>
-
-<span dir="ltr">Dash</span> + <span dir="ltr">Space</span> معمولاً یک عضو <span dir="ltr">List</span> می‌سازد:
+<span dir="ltr">List</span>
 
 networks:
-  - frontend
-  - backend
+  - frontend-net
+  - backend-net
 
-<span dir="ltr">List</span> می‌تواند از <span dir="ltr">Mapping</span> تشکیل شود:
+لیست از چند <span dir="ltr">Object</span>
 
 servers:
   - name: api-1
     port: 3000
-
   - name: api-2
     port: 3001
 
-قاعده خواندن:
+وقتی یک فایل پیچیده شد، اول تشخیص بده بخش فعلی Mapping است یا List؛ بعد سراغ معنی کلیدها برو.
 
-<p dir="rtl">هر وقت در ساختار بلوکی <span dir="ltr">YAML</span> یک <code dir="ltr">-</code> در محل درست دیدی، معمولاً یک عضو جدید از <span dir="ltr">List / Sequence</span> شروع شده است.</p>
+<a id="quotes" name="quotes"></a>
 
-<a id="values" name="values"></a>
+5. <span dir="ltr">Quote</span> و مقدارهای حساس
 
-6. نوع مقدارها و <span dir="ltr">Quote</span>
+برای مقدارهایی که باید حتماً <span dir="ltr">String</span> باقی بمانند، <span dir="ltr">Quote</span> انتخاب امنی است.
 
-name: backend
-replicas: 2
-timeout: 1.5
-debug: true
-cache: false
-optional: null
-
-مقدار
-
-نوع تقریبی
-
-<code dir="ltr">backend</code>
-
-<span dir="ltr">String</span>
-
-<code dir="ltr">2</code>
-
-<span dir="ltr">Integer</span>
-
-<code dir="ltr">1.5</code>
-
-<span dir="ltr">Float</span>
-
-<code dir="ltr">true</code>
-
-<span dir="ltr">Boolean</span>
-
-<code dir="ltr">null</code>
-
-<span dir="ltr">Null</span>
-
-برای <span dir="ltr">Value</span>هایی که باید قطعاً <span dir="ltr">String</span> بمانند، <span dir="ltr">Quote</span> مفید است:
+الگوی آماده
 
 version: "1.10"
-phone_like: "01234"
+code: "01234"
 answer: "yes"
 mode: "on"
+url: "https://example.com/api"
+schedule: "0 3 * * *"
+password: "abc#123"
 
-<span dir="ltr">Port Mapping:</span>
+برای <span dir="ltr">Port Mapping</span> هم همین الگو را استفاده کن:
 
 ports:
   - "8080:80"
 
-<span dir="ltr">Image Tag:</span>
-
-image: "myapp:1.4.2"
-
-<span dir="ltr">URL</span> و <span dir="ltr">Cron:</span>
-
-url: "https://example.com/api"
-schedule: "0 3 * * *"
-
-<span dir="ltr">Password</span> با <code dir="ltr">#</code>:
-
-password: "abc#123"
-
-قاعده امن:
-
-<p dir="rtl">اگر یک مقدار از نظر ظاهری ممکن است <span dir="ltr">Number</span>، <span dir="ltr">Boolean</span>، <span dir="ltr">Date</span> یا بخشی از <span dir="ltr">Syntax</span> تعبیر شود، اما برای پروژه باید <span dir="ltr">String</span> باقی بماند، آن را داخل <span dir="ltr">Quote</span> قرار بده.</p>
-
-<a id="comment" name="comment"></a>
-
-7. <span dir="ltr">Comment</span>
-
-# Application configuration
-name: backend
-
-<span dir="ltr">Inline:</span>
-
-port: 3000 # internal application port
-
-اگر <code dir="ltr">#</code> بخشی از <span dir="ltr">Value</span> است <span dir="ltr">Quote</span> بگذار:
-
-password: "abc#123"
-
-<span dir="ltr">Comment</span> باید <span dir="ltr">Context</span> یا دلیل بدهد، نه این‌که فقط همان خط را تکرار کند.
-
-ضعیف:
-
-ports:
-  - "8080:80" # port
-
-بهتر:
-
-ports:
-  - "8080:80" # local public entrypoint
-
 <a id="multiline" name="multiline"></a>
 
-8. متن چندخطی با <code dir="ltr">|</code> و <code dir="ltr">></code>
+6. متن چندخطی با <code dir="ltr">|</code> و <code dir="ltr">></code>
 
-<code dir="ltr">|</code>
-
-<span dir="ltr">Line break</span>ها را حفظ می‌کند:
+حفظ <span dir="ltr">Line Break</span>ها
 
 message: |
   line one
   line two
   line three
 
-<code dir="ltr">></code>
-
-خط‌ها را بیشتر به شکل متن پیوسته <span dir="ltr">Fold</span> می‌کند:
+تبدیل چند خط به متن پیوسته‌تر
 
 description: >
   This is a long description
   written across multiple lines.
 
-در <span dir="ltr">Compose</span> روزمره کمتر لازم می‌شود، اما در <span dir="ltr">CI/CD</span> و <span dir="ltr">Config</span>ها ممکن است ببینی.
+اگر در پروژه روزمره به این قابلیت نیاز نداری، لازم نیست برای شروع بیشتر از همین دو الگو حفظ کنی.
 
-<a id="flow" name="flow"></a>
+<a id="compose-minimal" name="compose-minimal"></a>
 
-9. <span dir="ltr">Flow Style</span> با <code dir="ltr">{}</code> و <code dir="ltr">[]</code>
+7. الگوی حداقلی <code dir="ltr">compose.yaml</code>
 
-فرم فشرده:
-
-user: {name: Ali, role: backend}
-ports: ["80", "443"]
-
-فرم <span dir="ltr">Block</span> معمولاً خواناتر است:
-
-user:
-  name: Ali
-  role: backend
-
-ports:
-  - "80"
-  - "443"
-
-<span dir="ltr">Flow Style</span> را وقتی استفاده کن که واقعاً خوانایی بهتر شود.
-
-<a id="anchors" name="anchors"></a>
-
-10. <span dir="ltr">Anchor</span>، <span dir="ltr">Alias</span> و <span dir="ltr">Merge</span>
-
-برای <span dir="ltr">Reuse:</span>
-
-x-common-env: &common-env
-  LOG_LEVEL: info
-  TZ: UTC
-
-استفاده:
-
-services:
-  api:
-    environment:
-      <<: *common-env
-      APP_NAME: api
-
-  worker:
-    environment:
-      <<: *common-env
-      APP_NAME: worker
-
-<pre dir="ltr"><code>&amp;common-env → Anchor
-*common-env → Alias
-&lt;&lt;:         → Merge</code></pre>
-
-این قابلیت مفید است، اما اگر خوانایی را برای تیم کم کند، ساده‌تر نوشتن بهتر است.
-
-<a id="reading" name="reading"></a>
-
-11. روش خواندن یک <span dir="ltr">YAML</span> پیچیده
-
-مثال:
-
-services:
-  backend:
-    build:
-      context: ./backend
-    ports:
-      - "8080:4000"
-    environment:
-      DB_HOST: database
-    networks:
-      - app-net
-
-به درخت تبدیلش کن:
-
-<pre dir="ltr"><code>services
-└── backend
-    ├── build
-    │   └── context: ./backend
-    ├── ports [list]
-    │   └── "8080:4000"
-    ├── environment
-    │   └── DB_HOST: database
-    └── networks [list]
-        └── app-net</code></pre>
-
-چهار سؤال:
-
-<ol dir="rtl">
-  <li><span dir="ltr">Parent</span> این خط چیست؟</li>
-  <li>ساختار فعلی <span dir="ltr">Mapping</span> است یا <span dir="ltr">List</span>؟</li>
-  <li><span dir="ltr">Value</span> یک <span dir="ltr">Scalar</span> است یا یک ساختار تو‌در‌تو؟</li>
-  <li>معنی این <span dir="ltr">Key</span> را خود <span dir="ltr">YAML</span> تعیین می‌کند یا ابزار مصرف‌کننده مثل <span dir="ltr">Docker Compose</span>؟</li>
-</ol>
-
-<a id="compose-base" name="compose-base"></a>
-
-12. ساختار پایه <code dir="ltr">compose.yaml</code>
-
-کوچک‌ترین نمونه کاربردی:
+آماده برای کپی
 
 services:
   web:
@@ -481,65 +226,54 @@ services:
     ports:
       - "8080:80"
 
-کامل‌تر:
+چه چیزهایی را تغییر بدهم؟
+
+<table dir="rtl">
+  <thead><tr><th>مقدار</th><th>برای پروژه خودت</th></tr></thead>
+  <tbody>
+    <tr><td><code dir="ltr">web</code></td><td>نام سرویس</td></tr>
+    <tr><td><code dir="ltr">nginx:alpine</code></td><td>نام و Tag ایمیج</td></tr>
+    <tr><td><code dir="ltr">8080:80</code></td><td><span dir="ltr">HOST_PORT:CONTAINER_PORT</span></td></tr>
+  </tbody>
+</table>
+
+تست
+
+docker compose config
+docker compose up -d
+docker compose ps
+
+<a id="image" name="image"></a>
+
+8. استفاده از <code dir="ltr">image</code>
+
+وقتی می‌خواهی از یک <span dir="ltr">Image</span> آماده استفاده کنی:
 
 services:
-  backend:
-    build: ./backend
-
-  database:
-    image: postgres:17
-
-volumes:
-  db-data:
-
-networks:
-  app-net:
-
-<span dir="ltr">Root Key</span>های پرتکرار:
-
-<pre dir="ltr"><code>services
-volumes
-networks</code></pre>
-
-در <span dir="ltr">Compose</span> جدید معمولاً نیازی به <code dir="ltr">version:</code> قدیمی نیست.
-
-<a id="services" name="services"></a>
-
-13. <code dir="ltr">services</code>
-
-<code dir="ltr">services</code> یک <span dir="ltr">Mapping</span> است:
-
-services:
-  backend:
-    image: my-backend
-
-  database:
-    image: postgres:17
-
-<pre dir="ltr"><code>services
-├── backend
-└── database</code></pre>
-
-نام <span dir="ltr">Service</span> در <span dir="ltr">DNS</span> داخلی <span dir="ltr">Compose</span> مهم است. <span dir="ltr">Backend</span> می‌تواند <span dir="ltr">Database</span> را با نام <code dir="ltr">database</code> پیدا کند.
-
-<a id="build-image" name="build-image"></a>
-
-14. <code dir="ltr">build</code> و <code dir="ltr">image</code>
-
-<span dir="ltr">Image</span> آماده:
-
-services:
-  nginx:
+  web:
     image: nginx:alpine
 
-<span dir="ltr">Build</span> از <span dir="ltr">Dockerfile:</span>
+نمونه دیگر:
+
+services:
+  database:
+    image: postgres:17
+
+فقط این بخش را تغییر بده: مقدار مقابل <code dir="ltr">image:</code>.
+
+<a id="build" name="build"></a>
+
+9. استفاده از <code dir="ltr">build</code>
+
+وقتی پروژه خودت <code dir="ltr">Dockerfile</code> دارد:
+
+حالت کوتاه
 
 services:
   backend:
     build: ./backend
 
-فرم واضح‌تر:
+حالت واضح‌تر و قابل توسعه
 
 services:
   backend:
@@ -547,110 +281,140 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
-<span dir="ltr">Build</span> و <span dir="ltr">Tag:</span>
+<span dir="ltr">Build</span> + نام‌گذاری <span dir="ltr">Image</span>
 
 services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     image: my-backend:1.0.0
 
 <table dir="rtl">
-  <thead><tr><th><span dir="ltr">Key</span></th><th>معنی در <span dir="ltr">Compose</span></th></tr></thead>
+  <thead><tr><th>قسمت</th><th>تغییر بده به</th></tr></thead>
   <tbody>
-    <tr><td><code dir="ltr">image</code></td><td>از یک <span dir="ltr">Image</span> مشخص استفاده کن.</td></tr>
-    <tr><td><code dir="ltr">build</code></td><td><span dir="ltr">Image</span> را از سورس و <code dir="ltr">Dockerfile</code> بساز.</td></tr>
+    <tr><td><code dir="ltr">./backend</code></td><td>مسیر پوشه پروژه</td></tr>
+    <tr><td><code dir="ltr">Dockerfile</code></td><td>نام Dockerfile در صورت متفاوت بودن</td></tr>
+    <tr><td><code dir="ltr">my-backend:1.0.0</code></td><td>نام و Tag دلخواه Image</td></tr>
   </tbody>
 </table>
 
 <a id="ports" name="ports"></a>
 
-15. <code dir="ltr">ports</code>
+10. <code dir="ltr">ports</code> — انتشار پورت
+
+فرم اصلی:
 
 ports:
   - "8080:80"
 
-<pre dir="ltr"><code>Host :8080
-   ↓
-Container :80</code></pre>
+معنی:
 
-اگر <span dir="ltr">Application</span> داخل <span dir="ltr">Container</span> روی <code dir="ltr">4000</code> است:
+Host 8080
+   |
+   v
+Container 80
+
+اگر برنامه داخل <span dir="ltr">Container</span> روی پورت <code dir="ltr">4000</code> اجرا می‌شود و می‌خواهی روی Host با <code dir="ltr">9000</code> باز شود:
 
 ports:
   - "9000:4000"
 
-از بیرون <code dir="ltr">localhost:9000</code> و داخل <span dir="ltr">Container Port</span> <code dir="ltr">4000</code> است.
+قانون حفظی: سمت چپ <span dir="ltr">Host</span>، سمت راست <span dir="ltr">Container</span>.
 
-لزومی ندارد همه <span dir="ltr">Service</span>ها <span dir="ltr">Port</span> عمومی داشته باشند. <span dir="ltr">Database</span> داخلی می‌تواند فقط روی <span dir="ltr">Network Compose</span> در دسترس <span dir="ltr">Backend</span> باشد.
+<a id="environment" name="environment"></a>
 
-<a id="env" name="env"></a>
+11. <code dir="ltr">environment</code>
 
-16. <code dir="ltr">environment</code>، <code dir="ltr">.env</code> و <code dir="ltr">env_file</code>
-
-<code dir="ltr">environment</code>
-
-<span dir="ltr">Variable</span> داخل <span dir="ltr">Container:</span>
+الگوی پیشنهادی
 
 services:
   backend:
     environment:
       APP_ENV: production
       DB_HOST: database
+      DB_PORT: "5432"
 
-فرم <span dir="ltr">List</span> هم ممکن است دیده شود:
+فرم <span dir="ltr">List</span> هم وجود دارد:
 
 environment:
   - APP_ENV=production
   - DB_HOST=database
 
-برای خوانایی، <span dir="ltr">Mapping</span> معمولاً واضح‌تر است.
+برای خوانایی، در این سند از فرم <span dir="ltr">Mapping</span> استفاده می‌کنیم.
 
-<code dir="ltr">.env</code> و <span dir="ltr">Interpolation</span>
+<a id="dot-env" name="dot-env"></a>
 
-<code dir="ltr">.env</code>:
+12. <code dir="ltr">.env</code> و <span dir="ltr">Variable Interpolation</span>
+
+فایل <code dir="ltr">.env</code>
 
 APP_PORT=8080
 IMAGE_TAG=1.0.0
+APP_ENV=development
 
-<span dir="ltr">Compose:</span>
+استفاده در <code dir="ltr">compose.yaml</code>
 
 services:
   backend:
     image: "my-backend:${IMAGE_TAG}"
     ports:
       - "${APP_PORT}:4000"
+    environment:
+      APP_ENV: ${APP_ENV}
 
-برای دیدن نتیجه <span dir="ltr">Resolve</span> شده:
+بررسی مقدار نهایی
 
 docker compose config
 
-<code dir="ltr">env_file</code>
+الگوی Repository
+
+.env          -> keep local / gitignored
+.env.example  -> commit as template
+
+نمونه <code dir="ltr">.env.example</code>:
+
+APP_PORT=8080
+IMAGE_TAG=CHANGE_ME
+APP_ENV=development
+
+<a id="env-file" name="env-file"></a>
+
+13. <code dir="ltr">env_file</code>
+
+وقتی می‌خواهی متغیرهای یک فایل وارد <span dir="ltr">Environment</span> خود <span dir="ltr">Container</span> شوند:
 
 services:
   backend:
     env_file:
       - .env
 
-<span dir="ltr">Variable</span>های فایل وارد <span dir="ltr">Environment Container</span> می‌شوند.
+برای چند فایل:
 
-مدل:
+services:
+  backend:
+    env_file:
+      - .env
+      - .env.local
+
+تفاوتی که باید یادت بماند:
 
 <table dir="rtl">
   <thead><tr><th>ساختار</th><th>نقش</th></tr></thead>
   <tbody>
-    <tr><td><code dir="ltr">${VAR}</code> در <code dir="ltr">compose.yaml</code></td><td><span dir="ltr">Interpolation</span> هنگام پردازش تنظیمات <span dir="ltr">Compose</span>.</td></tr>
-    <tr><td><code dir="ltr">environment:</code></td><td>تعریف <span dir="ltr">Environment Variable</span>هایی که به <span dir="ltr">Container</span> داده می‌شوند.</td></tr>
-    <tr><td><code dir="ltr">env_file:</code></td><td>خواندن متغیرهای محیطی <span dir="ltr">Container</span> از یک فایل.</td></tr>
+    <tr><td><code dir="ltr">${VAR}</code></td><td>جایگزینی مقدار هنگام پردازش فایل Compose</td></tr>
+    <tr><td><code dir="ltr">environment:</code></td><td>تعریف Environment Variable برای Container</td></tr>
+    <tr><td><code dir="ltr">env_file:</code></td><td>خواندن Environment Variableهای Container از فایل</td></tr>
   </tbody>
 </table>
 
-<code dir="ltr">.env.example</code> را <span dir="ltr">Commit</span> کن و <code dir="ltr">.env</code> واقعی را در <code dir="ltr">.gitignore</code> قرار بده.
+<a id="named-volume" name="named-volume"></a>
 
-<a id="volumes" name="volumes"></a>
+14. <span dir="ltr">Named Volume</span>
 
-17. <code dir="ltr">volumes</code> و انواع <span dir="ltr">Mount</span>
+برای داده‌ای که باید مستقل از عمر <span dir="ltr">Container</span> بماند، مثل داده پایگاه‌داده:
 
-<span dir="ltr">Named Volume</span>
+آماده برای کپی
 
 services:
   database:
@@ -661,252 +425,109 @@ services:
 volumes:
   db-data:
 
-سمت چپ <code dir="ltr">db-data</code> <span dir="ltr">Volume Docker</span> و سمت راست مسیر داخل <span dir="ltr">Container</span> است.
-
-<span dir="ltr">Bind Mount</span>
-
-services:
-  backend:
-    volumes:
-      - ./backend:/app
-
-سمت چپ مسیر <span dir="ltr">Host</span> و سمت راست مسیر <span dir="ltr">Container</span> است.
-
-<span dir="ltr">Read-only</span>
-
-volumes:
-  - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-
-<span dir="ltr">Anonymous Volume</span>
-
-ممکن است ببینی:
-
-volumes:
-  - /app/node_modules
-
-برای شروع، <span dir="ltr">Named Volume</span> و <span dir="ltr">Bind Mount</span> را کامل بفهم و <span dir="ltr">Anonymous Volume</span> را فقط وقتی استفاده کن که دلیلش روشن باشد.
-
-مدل تصمیم:
+چه چیزهایی را تغییر بدهم؟
 
 <table dir="rtl">
-  <thead><tr><th>نیاز</th><th>انتخاب معمول</th></tr></thead>
+  <thead><tr><th>مقدار</th><th>معنی</th></tr></thead>
   <tbody>
-    <tr><td>دادهٔ پایگاه‌داده</td><td><code dir="ltr">Named Volume</code></td></tr>
-    <tr><td><span dir="ltr">Source Code</span> در محیط توسعه</td><td><code dir="ltr">Bind Mount</code></td></tr>
-    <tr><td>فایل تنظیمات از <span dir="ltr">Host</span></td><td><code dir="ltr">Bind Mount</code>، اغلب به‌صورت <code dir="ltr">:ro</code> اگر فقط خواندن لازم است.</td></tr>
+    <tr><td><code dir="ltr">db-data</code></td><td>نام Volume</td></tr>
+    <tr><td><code dir="ltr">/var/lib/postgresql/data</code></td><td>مسیر داده داخل Container</td></tr>
   </tbody>
 </table>
 
-<a id="networks" name="networks"></a>
+نکته: اگر نام <span dir="ltr">Volume</span> را سمت چپ استفاده کردی، همان نام را پایین فایل زیر <code dir="ltr">volumes:</code> تعریف کن.
 
-18. <code dir="ltr">networks</code>
+<a id="bind-mount" name="bind-mount"></a>
 
-services:
-  backend:
-    networks:
-      - backend-net
+15. <span dir="ltr">Bind Mount</span>
 
-  database:
-    networks:
-      - backend-net
+برای اتصال فایل یا پوشه واقعی <span dir="ltr">Host</span> به داخل <span dir="ltr">Container</span>؛ معمولاً در <span dir="ltr">Development</span>:
 
-networks:
-  backend-net:
-
-چند <span dir="ltr">Network:</span>
-
-services:
-  nginx:
-    networks:
-      - frontend-net
-
-  backend:
-    networks:
-      - frontend-net
-      - backend-net
-
-  database:
-    networks:
-      - backend-net
-
-networks:
-  frontend-net:
-  backend-net:
-
-<pre dir="ltr"><code>Internet
-   ↓
-Nginx
-   │ frontend-net
-Backend
-   │ backend-net
-Database</code></pre>
-
-این الگو کمک می‌کند <span dir="ltr">Service</span>هایی که لازم نیست مستقیم با هم ارتباط داشته باشند روی یک <span dir="ltr">Network</span> مشترک قرار نگیرند.
-
-<a id="health" name="health"></a>
-
-19. <code dir="ltr">depends_on</code> و <code dir="ltr">healthcheck</code>
-
-<span dir="ltr">Dependency</span> ساده:
+پوشه
 
 services:
   backend:
-    depends_on:
-      - database
-
-اما <span dir="ltr">Start</span> شدن <span dir="ltr">Container</span> الزاماً یعنی <span dir="ltr">Service Ready</span> شده نیست.
-
-<span dir="ltr">Healthcheck:</span>
-
-services:
-  database:
-    image: postgres:17
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-وابستگی به <span dir="ltr">Health:</span>
-
-services:
-  backend:
-    depends_on:
-      database:
-        condition: service_healthy
-
-<a id="runtime" name="runtime"></a>
-
-20. <code dir="ltr">restart</code>، <code dir="ltr">command</code> و <code dir="ltr">entrypoint</code>
-
-<span dir="ltr">Restart Policy:</span>
-
-restart: unless-stopped
-
-یا:
-
-restart: on-failure
-
-<span dir="ltr">Override CMD:</span>
-
-command: ["python", "app.py"]
-
-<span dir="ltr">Override ENTRYPOINT:</span>
-
-entrypoint: ["/app/start.sh"]
-
-قاعده:
-
-<p dir="rtl">اگر <code dir="ltr">Dockerfile</code> رفتار اجرایی درست را تعریف کرده است، بدون نیاز مشخص <code dir="ltr">command</code> یا <code dir="ltr">entrypoint</code> را در <span dir="ltr">Compose</span> بازنویسی نکن.</p>
-
-<a id="secrets" name="secrets"></a>
-
-21. <span dir="ltr">Secret</span>ها را کجا نگذاریم؟
-
-بد:
-
-environment:
-  DB_PASSWORD: my-production-password
-
-اگر فایل <span dir="ltr">Commit</span> شود، <span dir="ltr">Secret</span> وارد <span dir="ltr">History</span> می‌شود.
-
-بهتر:
-
-environment:
-  DB_PASSWORD: ${DB_PASSWORD}
-
-و مقدار واقعی بیرون <span dir="ltr">Repository.</span>
-
-برای <span dir="ltr">Production</span> جدی، <span dir="ltr">Secret Management</span> باید متناسب با <span dir="ltr">Platform</span> انتخاب شود. <code dir="ltr">.env</code> برای <span dir="ltr">Development</span> و محیط‌های محدود مفید است، اما جای همه راهکارهای <span dir="ltr">Secret Management</span> را نمی‌گیرد.
-
-<a id="scenario1" name="scenario1"></a>
-
-22. سناریو 1: <span dir="ltr">Nginx</span> تک‌سرویسی
-
-services:
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-
-<span dir="ltr">Validate:</span>
-
-docker compose config
-
-<span dir="ltr">Run:</span>
-
-docker compose up -d
-
-<span dir="ltr">Test:</span>
-
-curl http://localhost:8080
-
-این ساده‌ترین ساختار برای فهم رابطهٔ بین <code dir="ltr">services</code>، نام هر <span dir="ltr">service</span>، <code dir="ltr">image</code> و <code dir="ltr">ports</code> است.
-
-<a id="scenario2" name="scenario2"></a>
-
-23. سناریو 2: <span dir="ltr">Backend</span> + <span dir="ltr">Database</span>
-
-services:
-  backend:
-    image: my-backend:1.0.0
-    ports:
-      - "8080:4000"
-    environment:
-      DB_HOST: database
-      DB_PORT: "5432"
-    depends_on:
-      - database
-
-  database:
-    image: postgres:17
-    environment:
-      POSTGRES_DB: appdb
-      POSTGRES_USER: appuser
-      POSTGRES_PASSWORD: dev-password
-    volumes:
-      - db-data:/var/lib/postgresql/data
-
-volumes:
-  db-data:
-
-ساختار:
-
-<pre dir="ltr"><code>services
-├── backend
-└── database
-
-volumes
-└── db-data</code></pre>
-
-در پروژه واقعی <span dir="ltr">Password</span> را از <code dir="ltr">.env</code> یا <span dir="ltr">Secret</span> مناسب بگیر.
-
-<a id="scenario3" name="scenario3"></a>
-
-24. سناریو 3: <span dir="ltr">Development</span> با <span dir="ltr">Bind Mount</span>
-
-services:
-  backend:
-    build:
-      context: ./backend
-    ports:
-      - "4000:4000"
     volumes:
       - ./backend:/app
-    environment:
-      APP_ENV: development
 
-<pre dir="ltr"><code>Host ./backend
-      ⇅
-Container /app</code></pre>
+یک فایل
 
-اگر <span dir="ltr">Runtime Auto Reload</span> داشته باشد، <span dir="ltr">Development</span> سریع‌تر می‌شود.
+services:
+  nginx:
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
 
-اما <span dir="ltr">Mount</span> کردن <code dir="ltr">/app</code> می‌تواند فایل‌های قبلی همان مسیر در <span dir="ltr">Image</span> را پنهان کند؛ مسیر را آگاهانه انتخاب کن.
+<table dir="rtl">
+  <thead><tr><th>سمت</th><th>معنی</th></tr></thead>
+  <tbody>
+    <tr><td>چپ</td><td>مسیر روی Host</td></tr>
+    <tr><td>راست</td><td>مسیر داخل Container</td></tr>
+  </tbody>
+</table>
 
-<a id="scenario4" name="scenario4"></a>
+<a id="readonly-mount" name="readonly-mount"></a>
 
-25. سناریو 4: <span dir="ltr">Network</span> اختصاصی
+16. <span dir="ltr">Read-only Mount</span>
+
+اگر <span dir="ltr">Container</span> فقط باید فایل را بخواند:
+
+services:
+  nginx:
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+<code dir="ltr"></code> یعنی <span dir="ltr">Read-only</span>.
+
+این الگو برای فایل‌های تنظیماتی که <span dir="ltr">Container</span> نباید تغییرشان دهد، خواناتر و امن‌تر است.
+
+<a id="anonymous-volume" name="anonymous-volume"></a>
+
+17. <span dir="ltr">Anonymous Volume</span>
+
+ممکن است چنین چیزی ببینی:
+
+services:
+  backend:
+    volumes:
+      - /app/node_modules
+
+اینجا سمت چپ نام مشخصی برای Volume وجود ندارد.
+
+برای شروع، Named Volume و Bind Mount را اول کامل بفهم. <span dir="ltr">Anonymous Volume</span> را وقتی استفاده کن که دلیل استفاده‌اش در معماری پروژه روشن است.
+
+<a id="network" name="network"></a>
+
+18. <span dir="ltr">Network</span> اختصاصی
+
+آماده برای کپی
+
+services:
+  backend:
+    networks:
+      - app-net
+
+  database:
+    networks:
+      - app-net
+
+networks:
+  app-net:
+
+اگر هر دو سرویس عضو یک <span dir="ltr">Network</span> باشند، Backend می‌تواند Database را با نام Service پیدا کند.
+
+environment:
+  DB_HOST: database
+
+از <span dir="ltr">IP</span> ثابت داخلی استفاده نکن:
+
+# Avoid this pattern
+DB_HOST: "172.20.0.4"
+
+<a id="two-networks" name="two-networks"></a>
+
+19. تفکیک <span dir="ltr">Frontend</span> و <span dir="ltr">Backend Network</span>
+
+الگوی قابل کپی برای سه سرویس:
 
 services:
   nginx:
@@ -929,58 +550,43 @@ networks:
   frontend-net:
   backend-net:
 
-<pre dir="ltr"><code>nginx
-  │
+مدل ارتباط:
+
+Nginx
+  |
+  v
 frontend-net
-  │
-backend
-  │
+  |
+  v
+Backend
+  |
+  v
 backend-net
-  │
-database</code></pre>
+  |
+  v
+Database
 
-از نظر <span dir="ltr">YAML</span> این فقط <span dir="ltr">Mapping</span> و <span dir="ltr">Sequence</span> است؛ معنی <span dir="ltr">Network</span> را <span dir="ltr">Compose</span> و <span dir="ltr">Docker</span> تعیین می‌کنند.
+<a id="depends-on" name="depends-on"></a>
 
-<a id="scenario5" name="scenario5"></a>
+20. <code dir="ltr">depends_on</code>
 
-26. سناریو 5: <code dir="ltr">.env</code> برای <span dir="ltr">Environment</span>های مختلف
-
-<code dir="ltr">.env</code>:
-
-APP_PORT=8080
-APP_ENV=development
-POSTGRES_DB=appdb
-POSTGRES_USER=appuser
-POSTGRES_PASSWORD=dev-secret
-
-<code dir="ltr">compose.yaml</code>:
+وابستگی ساده:
 
 services:
   backend:
-    image: my-backend:1.0.0
-    ports:
-      - "${APP_PORT}:4000"
-    environment:
-      APP_ENV: ${APP_ENV}
-      DB_HOST: database
-      DB_NAME: ${POSTGRES_DB}
-      DB_USER: ${POSTGRES_USER}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - database
 
   database:
     image: postgres:17
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
-نمایش نتیجه:
+این الگو ترتیب وابستگی را بیان می‌کند، اما Start شدن Container الزاماً به معنی Ready بودن سرویس داخل آن نیست. اگر Readiness مهم است، الگوی بخش بعد را ببین.
 
-docker compose config
+<a id="healthcheck" name="healthcheck"></a>
 
-<a id="scenario6" name="scenario6"></a>
+21. <code dir="ltr">healthcheck</code> و <code dir="ltr">service_healthy</code>
 
-27. سناریو 6: <span dir="ltr">Healthcheck</span> واقعی
+PostgreSQL — آماده برای کپی
 
 services:
   database:
@@ -990,9 +596,7 @@ services:
       POSTGRES_USER: appuser
       POSTGRES_PASSWORD: dev-secret
     healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -U appuser -d appdb
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -1003,56 +607,43 @@ services:
       database:
         condition: service_healthy
 
-همان <code dir="ltr">test</code> را می‌توان <span dir="ltr">Flow Style</span> هم نوشت:
+چیزهایی که باید هماهنگ تغییر بدهی
 
-test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+<code dir="ltr">POSTGRES_DB</code>
 
-هر دو را باید بتوانی بخوانی.
+<code dir="ltr">POSTGRES_USER</code>
 
-<a id="override" name="override"></a>
+مقدارهای همان User/Database در <code dir="ltr">pg_isready</code>
 
-28. <span dir="ltr">Compose</span> چندفایلی و <span dir="ltr">Override</span>
+اگر یکی را تغییر دادی و دیگری را جا انداختی، Healthcheck می‌تواند Fail شود.
 
-<span dir="ltr">Base:</span>
+<a id="restart-command" name="restart-command"></a>
 
-<code dir="ltr">compose.yaml</code>:
+22. <code dir="ltr">restart</code>، <code dir="ltr">command</code> و <code dir="ltr">entrypoint</code>
 
-services:
-  backend:
-    build: ./backend
-    environment:
-      APP_ENV: production
+Restart Policy
 
-<span dir="ltr">Development:</span>
+restart: unless-stopped
 
-<code dir="ltr">compose.dev.yaml</code>:
+یا:
 
-services:
-  backend:
-    environment:
-      APP_ENV: development
-    volumes:
-      - ./backend:/app
+restart: on-failure
 
-اجرا:
+Override کردن <span dir="ltr">CMD</span>
 
-docker compose \
-  -f compose.yaml \
-  -f compose.dev.yaml \
-  up -d
+command: ["python", "app.py"]
 
-نتیجه <span dir="ltr">Merge</span> شده:
+Override کردن <span dir="ltr">ENTRYPOINT</span>
 
-docker compose \
-  -f compose.yaml \
-  -f compose.dev.yaml \
-  config
+entrypoint: ["/app/start.sh"]
 
-برای پروژه کوچک، چند فایل بیش از حد می‌تواند پیچیدگی غیرضروری بسازد.
+اگر <code dir="ltr">Dockerfile</code> رفتار اجرایی درست را تعریف کرده است، بدون دلیل مشخص <code dir="ltr">command</code> یا <code dir="ltr">entrypoint</code> را Override نکن.
 
-<a id="reuse" name="reuse"></a>
+<a id="anchors" name="anchors"></a>
 
-29. <span dir="ltr">Reuse</span> با <code dir="ltr">x-</code> و <span dir="ltr">Anchor</span>
+23. <span dir="ltr">Anchor</span> و <span dir="ltr">Reuse</span>
+
+وقتی چند سرویس تنظیمات مشترک دارند:
 
 x-common-env: &common-env
   LOG_LEVEL: info
@@ -1071,40 +662,308 @@ services:
       <<: *common-env
       APP_ROLE: worker
 
-هدف:
+معنی علامت‌ها:
 
-<pre dir="ltr"><code>Shared configuration
-        │
-        ▼
-Multiple services</code></pre>
+&common-env  = anchor
+*common-env  = alias
+<<:          = merge
 
-اما معیار اصلی خوانایی است. اگر <span dir="ltr">Anchor</span> باعث شود فهم فایل سخت‌تر شود، <span dir="ltr">Reuse</span> ارزشش را از دست می‌دهد.
+این الگو را فقط وقتی استفاده کن که واقعاً تکرار را کم و خوانایی را بیشتر می‌کند.
 
-<a id="error-types" name="error-types"></a>
+<a id="template-nginx" name="template-nginx"></a>
 
-30. سه نوع خطا: <span dir="ltr">YAML</span>، <span dir="ltr">Compose Schema</span> و <span dir="ltr">Runtime</span>
+24. قالب کامل 1 — <span dir="ltr">Nginx</span>
 
-1. <span dir="ltr">YAML Syntax Error</span>
+<code dir="ltr">compose.yaml</code>
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+
+اجرا
+
+docker compose config
+docker compose up -d
+
+تست
+
+curl http://localhost:8080
+
+توقف
+
+docker compose down
+
+<a id="template-backend-db" name="template-backend-db"></a>
+
+25. قالب کامل 2 — <span dir="ltr">Backend + PostgreSQL</span>
+
+آماده برای کپی
+
+services:
+  backend:
+    image: my-backend:1.0.0
+    ports:
+      - "8080:4000"
+    environment:
+      DB_HOST: database
+      DB_PORT: "5432"
+      DB_NAME: appdb
+      DB_USER: appuser
+      DB_PASSWORD: dev-password
+    depends_on:
+      - database
+
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: dev-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+
+قبل از استفاده این‌ها را تغییر بده
+
+<table dir="rtl">
+  <thead><tr><th>مقدار نمونه</th><th>جایگزین پروژه</th></tr></thead>
+  <tbody>
+    <tr><td><code dir="ltr">my-backend:1.0.0</code></td><td>Image واقعی Backend</td></tr>
+    <tr><td><code dir="ltr">8080:4000</code></td><td>Port Mapping برنامه</td></tr>
+    <tr><td><code dir="ltr">appdb</code></td><td>نام Database</td></tr>
+    <tr><td><code dir="ltr">appuser</code></td><td>User پایگاه‌داده</td></tr>
+    <tr><td><code dir="ltr">dev-password</code></td><td>برای پروژه واقعی از Secret/.env بگیر</td></tr>
+  </tbody>
+</table>
+
+<a id="template-env-db" name="template-env-db"></a>
+
+26. قالب کامل 3 — <span dir="ltr">Backend + PostgreSQL + .env</span>
+
+این نسخه برای الگوبرداری بهتر از قرار دادن مستقیم Password داخل Compose است.
+
+<code dir="ltr">.env</code>
+
+APP_PORT=8080
+APP_ENV=development
+BACKEND_IMAGE=my-backend:1.0.0
+POSTGRES_DB=appdb
+POSTGRES_USER=appuser
+POSTGRES_PASSWORD=CHANGE_ME
+
+<code dir="ltr">compose.yaml</code>
+
+services:
+  backend:
+    image: "${BACKEND_IMAGE}"
+    ports:
+      - "${APP_PORT}:4000"
+    environment:
+      APP_ENV: ${APP_ENV}
+      DB_HOST: database
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - database
+
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+
+<code dir="ltr">.env.example</code>
+
+APP_PORT=8080
+APP_ENV=development
+BACKEND_IMAGE=my-backend:1.0.0
+POSTGRES_DB=appdb
+POSTGRES_USER=appuser
+POSTGRES_PASSWORD=CHANGE_ME
+
+بررسی
+
+docker compose config
+
+<code dir="ltr">.env.example</code> را می‌توانی به‌عنوان الگو در Repository نگه داری؛ مقدار واقعی Secret را داخل فایل نمونه قرار نده.
+
+<a id="template-dev" name="template-dev"></a>
+
+27. قالب کامل 4 — محیط <span dir="ltr">Development</span> با <span dir="ltr">Bind Mount</span>
+
+وقتی سورس روی Host است و Container باید تغییرهای آن را ببیند:
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+    environment:
+      APP_ENV: development
+
+تغییر بده
+
+<code dir="ltr">./backend</code> → مسیر سورس روی Host
+
+<code dir="ltr">/app</code> → مسیر کاری برنامه داخل Container
+
+<code dir="ltr">4000:4000</code> → پورت‌های پروژه
+
+نکته مهم
+
+Mount کردن یک پوشه روی <code dir="ltr">/app</code> می‌تواند فایل‌هایی را که قبلاً در همان مسیر داخل Image بوده‌اند، پشت Mount پنهان کند. مسیر را آگاهانه انتخاب کن.
+
+<a id="template-networks" name="template-networks"></a>
+
+28. قالب کامل 5 — سه سرویس با دو <span dir="ltr">Network</span>
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    networks:
+      - frontend-net
+
+  backend:
+    image: my-backend:1.0.0
+    environment:
+      DB_HOST: database
+    networks:
+      - frontend-net
+      - backend-net
+
+  database:
+    image: postgres:17
+    networks:
+      - backend-net
+
+networks:
+  frontend-net:
+  backend-net:
+
+در این الگو:
+
+<span dir="ltr">Nginx</span> و <span dir="ltr">Backend</span> یک Network مشترک دارند.
+
+<span dir="ltr">Backend</span> و <span dir="ltr">Database</span> Network دیگری دارند.
+
+<span dir="ltr">Nginx</span> مستقیماً عضو <code dir="ltr">backend-net</code> نیست.
+
+<a id="override" name="override"></a>
+
+29. <span dir="ltr">Compose Override</span> برای <span dir="ltr">Development</span>
+
+فایل پایه — <code dir="ltr">compose.yaml</code>
+
+services:
+  backend:
+    build: ./backend
+    environment:
+      APP_ENV: production
+
+فایل توسعه — <code dir="ltr">compose.dev.yaml</code>
+
+services:
+  backend:
+    environment:
+      APP_ENV: development
+    volumes:
+      - ./backend:/app
+
+اجرای ترکیبی
+
+docker compose \
+  -f compose.yaml \
+  -f compose.dev.yaml \
+  up -d
+
+دیدن نتیجه Merge شده
+
+docker compose \
+  -f compose.yaml \
+  -f compose.dev.yaml \
+  config
+
+برای پروژه کوچک، تعداد زیاد فایل Override می‌تواند از سادگی پروژه کم کند؛ فقط وقتی واقعاً لازم است از این الگو استفاده کن.
+
+<a id="validation" name="validation"></a>
+
+30. <span dir="ltr">Validate</span> و <span dir="ltr">Debug</span>
+
+مهم‌ترین دستور قبل از اجرا
+
+docker compose config
+
+این دستور برای این کارها بسیار مفید است:
+
+Parse کردن فایل
+
+Resolve کردن Variableها
+
+Merge کردن فایل‌های Compose
+
+نمایش Configuration نهایی
+
+پیدا کردن بسیاری از خطاهای ساختاری
+
+وضعیت سرویس‌ها
+
+docker compose ps
+
+همه لاگ‌ها
+
+docker compose logs -f
+
+لاگ یک سرویس
+
+docker compose logs -f backend
+
+ورود به Container یک Service
+
+docker compose exec backend sh
+
+اگر Image دارای Bash باشد:
+
+docker compose exec backend bash
+
+<a id="errors" name="errors"></a>
+
+31. سه نوع خطای مهم
+
+1. خطای <span dir="ltr">YAML Syntax</span>
 
 services:
    backend:
     image: my-backend
 
-<span dir="ltr">Indentation</span> خراب است.
+مشکل: <span dir="ltr">Indentation</span>.
 
-2. <span dir="ltr">Compose Schema Error</span>
-
-<span dir="ltr">YAML</span> درست است:
+2. فایل YAML درست است ولی <span dir="ltr">Compose Schema</span> غلط است
 
 services:
   backend:
     pizza: large
 
-ولی <code dir="ltr">pizza</code> <span dir="ltr">Key</span> معتبر <span dir="ltr">Compose</span> نیست.
+این فایل از نظر ساختار YAML قابل Parse است، اما <code dir="ltr">pizza</code> کلید معتبر Compose برای این Service نیست.
 
 3. <span dir="ltr">Runtime Error</span>
-
-<span dir="ltr">YAML</span> و <span dir="ltr">Schema</span> درست‌اند:
 
 services:
   web:
@@ -1112,217 +971,47 @@ services:
     ports:
       - "8080:80"
 
-اما <span dir="ltr">Host Port</span> <code dir="ltr">8080</code> قبلاً اشغال است.
+YAML و Compose می‌توانند درست باشند، اما مثلاً Port <code dir="ltr">8080</code> روی Host قبلاً اشغال باشد.
 
-مدل <span dir="ltr">Debug:</span>
+ترتیب بررسی:
 
-<pre dir="ltr"><code>YAML parse
-   ↓
-Compose validation
-   ↓
+YAML syntax
+    |
+    v
+Compose schema/config
+    |
+    v
 Docker runtime
-   ↓
-Application runtime</code></pre>
+    |
+    v
+Application runtime
 
-<a id="validation" name="validation"></a>
+<a id="copy-checklist" name="copy-checklist"></a>
 
-31. <span dir="ltr">Validation</span> و <span dir="ltr">Debug</span>
+32. <span dir="ltr">Copy Checklist</span> قبل از استفاده
 
-مهم‌ترین <span dir="ltr">Command:</span>
-
-docker compose config
-
-کاربرد:
-
-<span dir="ltr">Parse</span> فایل
-
-<span dir="ltr">Resolve Variable</span>ها
-
-<span dir="ltr">Merge</span> فایل‌ها
-
-نمایش <span dir="ltr">Configuration</span> نهایی
-
-پیدا کردن بسیاری از خطاهای <span dir="ltr">Structure</span>
-
-<span dir="ltr">Runtime:</span>
-
-docker compose ps
-docker compose logs -f
-docker compose logs -f backend
-docker compose exec backend sh
-
-چند فایل:
-
-docker compose \
-  -f compose.yaml \
-  -f compose.dev.yaml \
-  config
-
-<span dir="ltr">Checklist:</span>
+وقتی یک نمونه را از این فایل Copy کردی، قبل از اجرا این موارد را چک کن:
 
 <ul dir="rtl">
-  <li>☐ <span dir="ltr">Indentation</span> درست است؟</li>
-  <li>☐ <span dir="ltr">Parent</span> هر <span dir="ltr">Key</span> درست است؟</li>
-  <li>☐ <span dir="ltr">List</span> و <span dir="ltr">Mapping</span> را با هم اشتباه نکرده‌ام؟</li>
-  <li>☐ این <span dir="ltr">Key</span> در <span dir="ltr">Compose Schema</span> معتبر است؟</li>
-  <li>☐ متغیرها درست <span dir="ltr">Resolve</span> شده‌اند؟</li>
-  <li>☐ <span dir="ltr">Port</span> موردنظر آزاد است؟</li>
-  <li>☐ نام <span dir="ltr">Service</span> برای <span dir="ltr">DNS</span> داخلی درست است؟</li>
-  <li>☐ مسیر <span dir="ltr">Volume</span> یا <span dir="ltr">Bind Mount</span> درست است؟</li>
-  <li>☐ <span dir="ltr">Healthcheck</span> واقعاً کار می‌کند؟</li>
-  <li>☐ <span dir="ltr">Application</span> داخل <span dir="ltr">Container</span> در حال اجراست؟</li>
+  <li>☐ نام <span dir="ltr">Service</span>ها را با پروژه خودم هماهنگ کرده‌ام.</li>
+  <li>☐ <span dir="ltr">Image</span> یا مسیر <code dir="ltr">build</code> درست است.</li>
+  <li>☐ <span dir="ltr">Host Port</span> و <span dir="ltr">Container Port</span> را برعکس ننوشته‌ام.</li>
+  <li>☐ مسیرهای <span dir="ltr">Bind Mount</span> واقعاً روی Host وجود دارند.</li>
+  <li>☐ مسیر سمت راست Volume مربوط به همان برنامه/Image است.</li>
+  <li>☐ نام Volumeهای استفاده‌شده پایین فایل تعریف شده‌اند.</li>
+  <li>☐ نام Networkهای استفاده‌شده پایین فایل تعریف شده‌اند.</li>
+  <li>☐ برای ارتباط داخلی از نام Service استفاده کرده‌ام، نه IP ثابت.</li>
+  <li>☐ Secret واقعی داخل فایل Commit‌شونده نگذاشته‌ام.</li>
+  <li>☐ متغیرهای <code dir="ltr">${VAR}</code> مقدار دارند.</li>
+  <li>☐ در Healthcheck نام User و Database با Environment هماهنگ است.</li>
+  <li>☐ قبل از اجرا <code dir="ltr">docker compose config</code> را اجرا کرده‌ام.</li>
 </ul>
-
-<a id="style" name="style"></a>
-
-32. <span dir="ltr">Style Guide</span> پیشنهادی
-
-دو <span dir="ltr">Space</span> برای <span dir="ltr">Indentation</span>
-
-services:
-  backend:
-    image: my-backend
-
-<span dir="ltr">Tab</span> استفاده نکن
-
-<span dir="ltr">Editor</span> را طوری تنظیم کن که <span dir="ltr">YAML</span> با <span dir="ltr">Space Indent</span> شود.
-
-<span dir="ltr">Port Mapping</span> را <span dir="ltr">Quote</span> کن
-
-ports:
-  - "8080:80"
-
-<span dir="ltr">Value</span> مبهم را <span dir="ltr">Quote</span> کن
-
-version: "1.10"
-code: "0123"
-
-<span dir="ltr">Secret</span> واقعی <span dir="ltr">Commit</span> نکن
-
-<pre dir="ltr"><code>.env → gitignored
-.env.example → committed</code></pre>
-
-<span dir="ltr">Service Name</span> واضح
-
-خوب:
-
-services:
-  backend:
-  database:
-  nginx:
-
-ضعیف:
-
-services:
-  a1:
-  x:
-  srv2:
-
-<span dir="ltr">Comment</span> برای «چرا»
-
-ضعیف:
-
-ports:
-  - "8080:80" # port
-
-بهتر:
-
-ports:
-  - "8080:80" # local public entrypoint
-
-<span dir="ltr">IP</span> ثابت <span dir="ltr">Hard-code</span> نکن
-
-بد:
-
-DB_HOST: "172.20.0.4"
-
-خوب:
-
-DB_HOST: database
-
-<span dir="ltr">Configuration</span> را بیش از حد <span dir="ltr">Clever</span> نکن
-
-<span dir="ltr">Anchor</span>، <span dir="ltr">Override</span> و چند <span dir="ltr">Network</span> ابزارند، نه هدف. اگر نسخه ساده‌تر همان کار را واضح‌تر انجام می‌دهد، نسخه ساده‌تر برای تیم بهتر است.
-
-قبل از <span dir="ltr">Commit</span> یا <span dir="ltr">Deploy Validate</span> کن
-
-docker compose config
-
-<a id="practice" name="practice"></a>
-
-33. تمرین مرحله‌ای
-
-مرحله 1: <span dir="ltr">Nginx</span>
-
-services:
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-
-docker compose config
-docker compose up -d
-
-مرحله 2: <span dir="ltr">Named Volume</span>
-
-services:
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-    volumes:
-      - web-data:/usr/share/nginx/html
-
-volumes:
-  web-data:
-
-مرحله 3: <span dir="ltr">Network</span> و <span dir="ltr">Service</span> دوم
-
-services:
-  nginx:
-    image: nginx:alpine
-    networks:
-      - app-net
-
-  helper:
-    image: alpine
-    command: ["sleep", "3600"]
-    networks:
-      - app-net
-
-networks:
-  app-net:
-
-مرحله 4: <code dir="ltr">.env</code>
-
-NGINX_PORT=8080
-
-<span dir="ltr">Compose:</span>
-
-ports:
-  - "${NGINX_PORT}:80"
-
-نتیجه:
-
-docker compose config
-
-مرحله 5: خطای <span dir="ltr">Indentation</span> عمدی
-
-یک خط را بد <span dir="ltr">Indent</span> کن و با <code dir="ltr">docker compose config</code> خطا را پیدا کن.
-
-مرحله 6: <span dir="ltr">Schema Error</span> عمدی
-
-pizza: large
-
-تفاوت <span dir="ltr">YAML-valid</span> و <span dir="ltr">Compose-invalid</span> را ببین.
-
-اگر این مراحل را بفهمی، <span dir="ltr">YAML</span> برای <span dir="ltr">Compose</span> دیگر مجموعه‌ای از خط‌های حفظی نیست؛ تبدیل به <span dir="ltr">Structure</span> قابل‌تحلیل می‌شود.
 
 <a id="cheatsheet" name="cheatsheet"></a>
 
-34. <span dir="ltr">Cheat Sheet</span>
+33. <span dir="ltr">Cheat Sheet</span> نهایی
 
-ساختار <span dir="ltr">YAML</span>
+ساختار YAML
 
 key: value
 
@@ -1339,67 +1028,106 @@ list_of_objects:
   - name: two
     port: 3001
 
-<span dir="ltr">Compose</span> پایه
+Service با Image
+
+services:
+  web:
+    image: nginx:alpine
+
+Service با Build
 
 services:
   backend:
-    image: my-backend
-    ports:
-      - "8080:4000"
-    environment:
-      APP_ENV: production
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+Port
+
+ports:
+  - "8080:80"
+
+Environment
+
+environment:
+  APP_ENV: production
+  DB_HOST: database
+
+Variable از <code dir="ltr">.env</code>
+
+image: "myapp:${IMAGE_TAG}"
+
+IMAGE_TAG=1.0.0
+
+Named Volume
+
+services:
+  database:
     volumes:
-      - ./backend:/app
-    networks:
-      - app-net
+      - db-data:/var/lib/postgresql/data
 
 volumes:
-  data:
+  db-data:
+
+Bind Mount
+
+volumes:
+  - ./backend:/app
+
+Read-only
+
+volumes:
+  - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+Network
+
+services:
+  backend:
+    networks:
+      - app-net
 
 networks:
   app-net:
 
-<span dir="ltr">Variable</span>
+depends_on
 
-image: "myapp:${IMAGE_TAG}"
+depends_on:
+  - database
 
-<code dir="ltr">.env</code>:
-
-IMAGE_TAG=1.0.0
-
-<span dir="ltr">Volume</span>
-
-volumes:
-  - db-data:/var/lib/postgresql/data
-
-<span dir="ltr">Bind Mount</span>
-
-volumes:
-  - ./src:/app/src
-
-<span dir="ltr">Network</span>
-
-networks:
-  - app-net
-
-<span dir="ltr">Healthcheck</span>
+Healthcheck
 
 healthcheck:
-  test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
-  interval: 10s
+  test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+  interval: 5s
   timeout: 3s
-  retries: 5
+  retries: 10
 
-<span dir="ltr">Validate</span>
+Restart
+
+restart: unless-stopped
+
+دستورات پایه
 
 docker compose config
+docker compose up -d
+docker compose ps
+docker compose logs -f
+docker compose down
 
-اصل نهایی:
+جمع‌بندی روش کار
 
-<ol dir="rtl">
-  <li>اول ساختار <span dir="ltr">YAML</span> را بخوان.</li>
-  <li>بعد <span dir="ltr">Schema</span> ابزار را بررسی کن.</li>
-  <li>در آخر سراغ <span dir="ltr">Runtime Debugging</span> برو.</li>
-</ol>
+برای کار روزمره لازم نیست تمام <span dir="ltr">YAML</span> را از حفظ بنویسی. مهم‌تر این است که:
+
+ساختار <span dir="ltr">Mapping / List / Indentation</span> را بفهمی.
+
+یک الگوی سالم و نزدیک به نیازت پیدا کنی.
+
+همان الگو را Copy کنی و فقط بخش‌های لازم را تغییر بدهی.
+
+با <code dir="ltr">docker compose config</code> نتیجه را بررسی کنی.
+
+بعد سراغ اجرای پروژه بروی.
+
+این همان روشی است که این سند بر اساس آن چیده شده: کمتر حفظ کن، بیشتر الگوی درست را بخوان، Copy کن، تغییر بده و Validate کن.
 
 </div>
