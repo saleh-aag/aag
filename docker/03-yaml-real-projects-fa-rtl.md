@@ -520,7 +520,6 @@ environment:
 
 از <span dir="ltr">IP</span> ثابت داخلی استفاده نکن:
 
-# Avoid this pattern
 DB_HOST: "172.20.0.4"
 
 <a id="two-networks" name="two-networks"></a>
