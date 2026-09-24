@@ -6,6 +6,8 @@
 
 روش استفاده از این سند: <span dir="ltr">Find → Copy → Change → Validate → Run</span>
 
+</div>
+
 Find the pattern
       |
       v
@@ -19,6 +21,8 @@ docker compose config
       |
       v
 docker compose up -d
+
+<div dir="rtl" align="right">
 
 هر <span dir="ltr">Code Block</span> مستقل نوشته شده تا در <span dir="ltr">GitHub</span> بتوانی با دکمه‌ی <span dir="ltr">Copy</span> همان بلوک را برداری و در پروژه خودت استفاده کنی.
 
@@ -80,19 +84,35 @@ docker compose up -d
 
 دستور پایه برای بررسی فایل:
 
+</div>
+
 docker compose config
+
+<div dir="rtl" align="right">
 
 اگر درست بود:
 
+</div>
+
 docker compose up -d
+
+<div dir="rtl" align="right">
 
 برای دیدن وضعیت:
 
+</div>
+
 docker compose ps
+
+<div dir="rtl" align="right">
 
 برای دیدن لاگ‌ها:
 
+</div>
+
 docker compose logs -f
+
+<div dir="rtl" align="right">
 
 <a id="yaml-core" name="yaml-core"></a>
 
@@ -102,21 +122,33 @@ docker compose logs -f
 
 مقدار ساده — <span dir="ltr">Scalar</span>
 
+</div>
+
 name: backend
 port: 4000
 enabled: true
 
+<div dir="rtl" align="right">
+
 کلید و مقدار — <span dir="ltr">Mapping</span>
+
+</div>
 
 database:
   host: database
   port: 5432
 
+<div dir="rtl" align="right">
+
 لیست — <span dir="ltr">Sequence</span>
+
+</div>
 
 ports:
   - "8080:80"
   - "8443:443"
+
+<div dir="rtl" align="right">
 
 مدل ذهنی: علامت <code dir="ltr">:</code> معمولاً <span dir="ltr">Key</span> را از مقدارش جدا می‌کند و <code dir="ltr">-</code> معمولاً یک عضو جدید از <span dir="ltr">List</span> را شروع می‌کند.
 
@@ -128,17 +160,25 @@ ports:
 
 درست — قابل الگوبرداری
 
+</div>
+
 services:
   backend:
     image: my-backend:1.0.0
     environment:
       APP_ENV: production
 
+<div dir="rtl" align="right">
+
 اشتباه
+
+</div>
 
 services:
    backend:
     image: my-backend:1.0.0
+
+<div dir="rtl" align="right">
 
 قاعده عملی:
 
@@ -154,23 +194,35 @@ services:
 
 <span dir="ltr">Mapping</span>
 
+</div>
+
 environment:
   APP_ENV: production
   DB_HOST: database
 
+<div dir="rtl" align="right">
+
 <span dir="ltr">List</span>
+
+</div>
 
 networks:
   - frontend-net
   - backend-net
 
+<div dir="rtl" align="right">
+
 لیست از چند <span dir="ltr">Object</span>
+
+</div>
 
 servers:
   - name: api-1
     port: 3000
   - name: api-2
     port: 3001
+
+<div dir="rtl" align="right">
 
 وقتی یک فایل پیچیده شد، اول تشخیص بده بخش فعلی Mapping است یا List؛ بعد سراغ معنی کلیدها برو.
 
@@ -182,6 +234,8 @@ servers:
 
 الگوی آماده
 
+</div>
+
 version: "1.10"
 code: "01234"
 answer: "yes"
@@ -190,10 +244,16 @@ url: "https://example.com/api"
 schedule: "0 3 * * *"
 password: "abc#123"
 
+<div dir="rtl" align="right">
+
 برای <span dir="ltr">Port Mapping</span> هم همین الگو را استفاده کن:
+
+</div>
 
 ports:
   - "8080:80"
+
+<div dir="rtl" align="right">
 
 <a id="multiline" name="multiline"></a>
 
@@ -201,16 +261,24 @@ ports:
 
 حفظ <span dir="ltr">Line Break</span>ها
 
+</div>
+
 message: |
   line one
   line two
   line three
 
+<div dir="rtl" align="right">
+
 تبدیل چند خط به متن پیوسته‌تر
+
+</div>
 
 description: >
   This is a long description
   written across multiple lines.
+
+<div dir="rtl" align="right">
 
 اگر در پروژه روزمره به این قابلیت نیاز نداری، لازم نیست برای شروع بیشتر از همین دو الگو حفظ کنی.
 
@@ -220,11 +288,15 @@ description: >
 
 آماده برای کپی
 
+</div>
+
 services:
   web:
     image: nginx:alpine
     ports:
       - "8080:80"
+
+<div dir="rtl" align="right">
 
 چه چیزهایی را تغییر بدهم؟
 
@@ -239,9 +311,13 @@ services:
 
 تست
 
+</div>
+
 docker compose config
 docker compose up -d
 docker compose ps
+
+<div dir="rtl" align="right">
 
 <a id="image" name="image"></a>
 
@@ -249,15 +325,23 @@ docker compose ps
 
 وقتی می‌خواهی از یک <span dir="ltr">Image</span> آماده استفاده کنی:
 
+</div>
+
 services:
   web:
     image: nginx:alpine
 
+<div dir="rtl" align="right">
+
 نمونه دیگر:
+
+</div>
 
 services:
   database:
     image: postgres:17
+
+<div dir="rtl" align="right">
 
 فقط این بخش را تغییر بده: مقدار مقابل <code dir="ltr">image:</code>.
 
@@ -269,11 +353,17 @@ services:
 
 حالت کوتاه
 
+</div>
+
 services:
   backend:
     build: ./backend
 
+<div dir="rtl" align="right">
+
 حالت واضح‌تر و قابل توسعه
+
+</div>
 
 services:
   backend:
@@ -281,7 +371,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
+<div dir="rtl" align="right">
+
 <span dir="ltr">Build</span> + نام‌گذاری <span dir="ltr">Image</span>
+
+</div>
 
 services:
   backend:
@@ -289,6 +383,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     image: my-backend:1.0.0
+
+<div dir="rtl" align="right">
 
 <table dir="rtl">
   <thead><tr><th>قسمت</th><th>تغییر بده به</th></tr></thead>
@@ -305,20 +401,32 @@ services:
 
 فرم اصلی:
 
+</div>
+
 ports:
   - "8080:80"
 
+<div dir="rtl" align="right">
+
 معنی:
+
+</div>
 
 Host 8080
    |
    v
 Container 80
 
+<div dir="rtl" align="right">
+
 اگر برنامه داخل <span dir="ltr">Container</span> روی پورت <code dir="ltr">4000</code> اجرا می‌شود و می‌خواهی روی Host با <code dir="ltr">9000</code> باز شود:
+
+</div>
 
 ports:
   - "9000:4000"
+
+<div dir="rtl" align="right">
 
 قانون حفظی: سمت چپ <span dir="ltr">Host</span>، سمت راست <span dir="ltr">Container</span>.
 
@@ -328,6 +436,8 @@ ports:
 
 الگوی پیشنهادی
 
+</div>
+
 services:
   backend:
     environment:
@@ -335,11 +445,17 @@ services:
       DB_HOST: database
       DB_PORT: "5432"
 
+<div dir="rtl" align="right">
+
 فرم <span dir="ltr">List</span> هم وجود دارد:
+
+</div>
 
 environment:
   - APP_ENV=production
   - DB_HOST=database
+
+<div dir="rtl" align="right">
 
 برای خوانایی، در این سند از فرم <span dir="ltr">Mapping</span> استفاده می‌کنیم.
 
@@ -349,11 +465,17 @@ environment:
 
 فایل <code dir="ltr">.env</code>
 
+</div>
+
 APP_PORT=8080
 IMAGE_TAG=1.0.0
 APP_ENV=development
 
+<div dir="rtl" align="right">
+
 استفاده در <code dir="ltr">compose.yaml</code>
+
+</div>
 
 services:
   backend:
@@ -363,20 +485,34 @@ services:
     environment:
       APP_ENV: ${APP_ENV}
 
+<div dir="rtl" align="right">
+
 بررسی مقدار نهایی
+
+</div>
 
 docker compose config
 
+<div dir="rtl" align="right">
+
 الگوی Repository
+
+</div>
 
 .env          -> keep local / gitignored
 .env.example  -> commit as template
 
+<div dir="rtl" align="right">
+
 نمونه <code dir="ltr">.env.example</code>:
+
+</div>
 
 APP_PORT=8080
 IMAGE_TAG=CHANGE_ME
 APP_ENV=development
+
+<div dir="rtl" align="right">
 
 <a id="env-file" name="env-file"></a>
 
@@ -384,18 +520,26 @@ APP_ENV=development
 
 وقتی می‌خواهی متغیرهای یک فایل وارد <span dir="ltr">Environment</span> خود <span dir="ltr">Container</span> شوند:
 
+</div>
+
 services:
   backend:
     env_file:
       - .env
 
+<div dir="rtl" align="right">
+
 برای چند فایل:
+
+</div>
 
 services:
   backend:
     env_file:
       - .env
       - .env.local
+
+<div dir="rtl" align="right">
 
 تفاوتی که باید یادت بماند:
 
@@ -416,6 +560,8 @@ services:
 
 آماده برای کپی
 
+</div>
+
 services:
   database:
     image: postgres:17
@@ -424,6 +570,8 @@ services:
 
 volumes:
   db-data:
+
+<div dir="rtl" align="right">
 
 چه چیزهایی را تغییر بدهم؟
 
@@ -445,17 +593,25 @@ volumes:
 
 پوشه
 
+</div>
+
 services:
   backend:
     volumes:
       - ./backend:/app
 
+<div dir="rtl" align="right">
+
 یک فایل
+
+</div>
 
 services:
   nginx:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+<div dir="rtl" align="right">
 
 <table dir="rtl">
   <thead><tr><th>سمت</th><th>معنی</th></tr></thead>
@@ -471,10 +627,14 @@ services:
 
 اگر <span dir="ltr">Container</span> فقط باید فایل را بخواند:
 
+</div>
+
 services:
   nginx:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+<div dir="rtl" align="right">
 
 <code dir="ltr"></code> یعنی <span dir="ltr">Read-only</span>.
 
@@ -486,10 +646,14 @@ services:
 
 ممکن است چنین چیزی ببینی:
 
+</div>
+
 services:
   backend:
     volumes:
       - /app/node_modules
+
+<div dir="rtl" align="right">
 
 اینجا سمت چپ نام مشخصی برای Volume وجود ندارد.
 
@@ -500,6 +664,8 @@ services:
 18. <span dir="ltr">Network</span> اختصاصی
 
 آماده برای کپی
+
+</div>
 
 services:
   backend:
@@ -513,20 +679,32 @@ services:
 networks:
   app-net:
 
+<div dir="rtl" align="right">
+
 اگر هر دو سرویس عضو یک <span dir="ltr">Network</span> باشند، Backend می‌تواند Database را با نام Service پیدا کند.
+
+</div>
 
 environment:
   DB_HOST: database
 
+<div dir="rtl" align="right">
+
 از <span dir="ltr">IP</span> ثابت داخلی استفاده نکن:
 
+</div>
+
 DB_HOST: "172.20.0.4"
+
+<div dir="rtl" align="right">
 
 <a id="two-networks" name="two-networks"></a>
 
 19. تفکیک <span dir="ltr">Frontend</span> و <span dir="ltr">Backend Network</span>
 
 الگوی قابل کپی برای سه سرویس:
+
+</div>
 
 services:
   nginx:
@@ -549,7 +727,11 @@ networks:
   frontend-net:
   backend-net:
 
+<div dir="rtl" align="right">
+
 مدل ارتباط:
+
+</div>
 
 Nginx
   |
@@ -565,11 +747,15 @@ backend-net
   v
 Database
 
+<div dir="rtl" align="right">
+
 <a id="depends-on" name="depends-on"></a>
 
 20. <code dir="ltr">depends_on</code>
 
 وابستگی ساده:
+
+</div>
 
 services:
   backend:
@@ -579,6 +765,8 @@ services:
   database:
     image: postgres:17
 
+<div dir="rtl" align="right">
+
 این الگو ترتیب وابستگی را بیان می‌کند، اما Start شدن Container الزاماً به معنی Ready بودن سرویس داخل آن نیست. اگر Readiness مهم است، الگوی بخش بعد را ببین.
 
 <a id="healthcheck" name="healthcheck"></a>
@@ -586,6 +774,8 @@ services:
 21. <code dir="ltr">healthcheck</code> و <code dir="ltr">service_healthy</code>
 
 PostgreSQL — آماده برای کپی
+
+</div>
 
 services:
   database:
@@ -606,6 +796,8 @@ services:
       database:
         condition: service_healthy
 
+<div dir="rtl" align="right">
+
 چیزهایی که باید هماهنگ تغییر بدهی
 
 <code dir="ltr">POSTGRES_DB</code>
@@ -622,19 +814,35 @@ services:
 
 Restart Policy
 
+</div>
+
 restart: unless-stopped
+
+<div dir="rtl" align="right">
 
 یا:
 
+</div>
+
 restart: on-failure
+
+<div dir="rtl" align="right">
 
 Override کردن <span dir="ltr">CMD</span>
 
+</div>
+
 command: ["python", "app.py"]
+
+<div dir="rtl" align="right">
 
 Override کردن <span dir="ltr">ENTRYPOINT</span>
 
+</div>
+
 entrypoint: ["/app/start.sh"]
+
+<div dir="rtl" align="right">
 
 اگر <code dir="ltr">Dockerfile</code> رفتار اجرایی درست را تعریف کرده است، بدون دلیل مشخص <code dir="ltr">command</code> یا <code dir="ltr">entrypoint</code> را Override نکن.
 
@@ -643,6 +851,8 @@ entrypoint: ["/app/start.sh"]
 23. <span dir="ltr">Anchor</span> و <span dir="ltr">Reuse</span>
 
 وقتی چند سرویس تنظیمات مشترک دارند:
+
+</div>
 
 x-common-env: &common-env
   LOG_LEVEL: info
@@ -661,11 +871,17 @@ services:
       <<: *common-env
       APP_ROLE: worker
 
+<div dir="rtl" align="right">
+
 معنی علامت‌ها:
+
+</div>
 
 &common-env  = anchor
 *common-env  = alias
 <<:          = merge
+
+<div dir="rtl" align="right">
 
 این الگو را فقط وقتی استفاده کن که واقعاً تکرار را کم و خوانایی را بیشتر می‌کند.
 
@@ -675,30 +891,48 @@ services:
 
 <code dir="ltr">compose.yaml</code>
 
+</div>
+
 services:
   nginx:
     image: nginx:alpine
     ports:
       - "8080:80"
 
+<div dir="rtl" align="right">
+
 اجرا
+
+</div>
 
 docker compose config
 docker compose up -d
 
+<div dir="rtl" align="right">
+
 تست
+
+</div>
 
 curl http://localhost:8080
 
+<div dir="rtl" align="right">
+
 توقف
 
+</div>
+
 docker compose down
+
+<div dir="rtl" align="right">
 
 <a id="template-backend-db" name="template-backend-db"></a>
 
 25. قالب کامل 2 — <span dir="ltr">Backend + PostgreSQL</span>
 
 آماده برای کپی
+
+</div>
 
 services:
   backend:
@@ -726,6 +960,8 @@ services:
 volumes:
   db-data:
 
+<div dir="rtl" align="right">
+
 قبل از استفاده این‌ها را تغییر بده
 
 <table dir="rtl">
@@ -747,6 +983,8 @@ volumes:
 
 <code dir="ltr">.env</code>
 
+</div>
+
 APP_PORT=8080
 APP_ENV=development
 BACKEND_IMAGE=my-backend:1.0.0
@@ -754,7 +992,11 @@ POSTGRES_DB=appdb
 POSTGRES_USER=appuser
 POSTGRES_PASSWORD=CHANGE_ME
 
+<div dir="rtl" align="right">
+
 <code dir="ltr">compose.yaml</code>
+
+</div>
 
 services:
   backend:
@@ -783,7 +1025,11 @@ services:
 volumes:
   db-data:
 
+<div dir="rtl" align="right">
+
 <code dir="ltr">.env.example</code>
+
+</div>
 
 APP_PORT=8080
 APP_ENV=development
@@ -792,9 +1038,15 @@ POSTGRES_DB=appdb
 POSTGRES_USER=appuser
 POSTGRES_PASSWORD=CHANGE_ME
 
+<div dir="rtl" align="right">
+
 بررسی
 
+</div>
+
 docker compose config
+
+<div dir="rtl" align="right">
 
 <code dir="ltr">.env.example</code> را می‌توانی به‌عنوان الگو در Repository نگه داری؛ مقدار واقعی Secret را داخل فایل نمونه قرار نده.
 
@@ -803,6 +1055,8 @@ docker compose config
 27. قالب کامل 4 — محیط <span dir="ltr">Development</span> با <span dir="ltr">Bind Mount</span>
 
 وقتی سورس روی Host است و Container باید تغییرهای آن را ببیند:
+
+</div>
 
 services:
   backend:
@@ -815,6 +1069,8 @@ services:
       - ./backend:/app
     environment:
       APP_ENV: development
+
+<div dir="rtl" align="right">
 
 تغییر بده
 
@@ -831,6 +1087,8 @@ Mount کردن یک پوشه روی <code dir="ltr">/app</code> می‌توان�
 <a id="template-networks" name="template-networks"></a>
 
 28. قالب کامل 5 — سه سرویس با دو <span dir="ltr">Network</span>
+
+</div>
 
 services:
   nginx:
@@ -857,6 +1115,8 @@ networks:
   frontend-net:
   backend-net:
 
+<div dir="rtl" align="right">
+
 در این الگو:
 
 <span dir="ltr">Nginx</span> و <span dir="ltr">Backend</span> یک Network مشترک دارند.
@@ -871,13 +1131,19 @@ networks:
 
 فایل پایه — <code dir="ltr">compose.yaml</code>
 
+</div>
+
 services:
   backend:
     build: ./backend
     environment:
       APP_ENV: production
 
+<div dir="rtl" align="right">
+
 فایل توسعه — <code dir="ltr">compose.dev.yaml</code>
+
+</div>
 
 services:
   backend:
@@ -886,19 +1152,29 @@ services:
     volumes:
       - ./backend:/app
 
+<div dir="rtl" align="right">
+
 اجرای ترکیبی
+
+</div>
 
 docker compose \
   -f compose.yaml \
   -f compose.dev.yaml \
   up -d
 
+<div dir="rtl" align="right">
+
 دیدن نتیجه Merge شده
+
+</div>
 
 docker compose \
   -f compose.yaml \
   -f compose.dev.yaml \
   config
+
+<div dir="rtl" align="right">
 
 برای پروژه کوچک، تعداد زیاد فایل Override می‌تواند از سادگی پروژه کم کند؛ فقط وقتی واقعاً لازم است از این الگو استفاده کن.
 
@@ -908,7 +1184,11 @@ docker compose \
 
 مهم‌ترین دستور قبل از اجرا
 
+</div>
+
 docker compose config
+
+<div dir="rtl" align="right">
 
 این دستور برای این کارها بسیار مفید است:
 
@@ -924,23 +1204,43 @@ Merge کردن فایل‌های Compose
 
 وضعیت سرویس‌ها
 
+</div>
+
 docker compose ps
+
+<div dir="rtl" align="right">
 
 همه لاگ‌ها
 
+</div>
+
 docker compose logs -f
+
+<div dir="rtl" align="right">
 
 لاگ یک سرویس
 
+</div>
+
 docker compose logs -f backend
+
+<div dir="rtl" align="right">
 
 ورود به Container یک Service
 
+</div>
+
 docker compose exec backend sh
+
+<div dir="rtl" align="right">
 
 اگر Image دارای Bash باشد:
 
+</div>
+
 docker compose exec backend bash
+
+<div dir="rtl" align="right">
 
 <a id="errors" name="errors"></a>
 
@@ -948,21 +1248,31 @@ docker compose exec backend bash
 
 1. خطای <span dir="ltr">YAML Syntax</span>
 
+</div>
+
 services:
    backend:
     image: my-backend
+
+<div dir="rtl" align="right">
 
 مشکل: <span dir="ltr">Indentation</span>.
 
 2. فایل YAML درست است ولی <span dir="ltr">Compose Schema</span> غلط است
 
+</div>
+
 services:
   backend:
     pizza: large
 
+<div dir="rtl" align="right">
+
 این فایل از نظر ساختار YAML قابل Parse است، اما <code dir="ltr">pizza</code> کلید معتبر Compose برای این Service نیست.
 
 3. <span dir="ltr">Runtime Error</span>
+
+</div>
 
 services:
   web:
@@ -970,9 +1280,13 @@ services:
     ports:
       - "8080:80"
 
+<div dir="rtl" align="right">
+
 YAML و Compose می‌توانند درست باشند، اما مثلاً Port <code dir="ltr">8080</code> روی Host قبلاً اشغال باشد.
 
 ترتیب بررسی:
+
+</div>
 
 YAML syntax
     |
@@ -984,6 +1298,8 @@ Docker runtime
     |
     v
 Application runtime
+
+<div dir="rtl" align="right">
 
 <a id="copy-checklist" name="copy-checklist"></a>
 
@@ -1012,6 +1328,8 @@ Application runtime
 
 ساختار YAML
 
+</div>
+
 key: value
 
 parent:
@@ -1027,13 +1345,21 @@ list_of_objects:
   - name: two
     port: 3001
 
+<div dir="rtl" align="right">
+
 Service با Image
+
+</div>
 
 services:
   web:
     image: nginx:alpine
 
+<div dir="rtl" align="right">
+
 Service با Build
+
+</div>
 
 services:
   backend:
@@ -1041,24 +1367,44 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
+<div dir="rtl" align="right">
+
 Port
+
+</div>
 
 ports:
   - "8080:80"
 
+<div dir="rtl" align="right">
+
 Environment
+
+</div>
 
 environment:
   APP_ENV: production
   DB_HOST: database
 
+<div dir="rtl" align="right">
+
 Variable از <code dir="ltr">.env</code>
+
+</div>
 
 image: "myapp:${IMAGE_TAG}"
 
+<div dir="rtl" align="right">
+
+</div>
+
 IMAGE_TAG=1.0.0
 
+<div dir="rtl" align="right">
+
 Named Volume
+
+</div>
 
 services:
   database:
@@ -1068,17 +1414,29 @@ services:
 volumes:
   db-data:
 
+<div dir="rtl" align="right">
+
 Bind Mount
+
+</div>
 
 volumes:
   - ./backend:/app
 
+<div dir="rtl" align="right">
+
 Read-only
+
+</div>
 
 volumes:
   - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
 
+<div dir="rtl" align="right">
+
 Network
+
+</div>
 
 services:
   backend:
@@ -1088,12 +1446,20 @@ services:
 networks:
   app-net:
 
+<div dir="rtl" align="right">
+
 depends_on
+
+</div>
 
 depends_on:
   - database
 
+<div dir="rtl" align="right">
+
 Healthcheck
+
+</div>
 
 healthcheck:
   test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
@@ -1101,17 +1467,27 @@ healthcheck:
   timeout: 3s
   retries: 10
 
+<div dir="rtl" align="right">
+
 Restart
+
+</div>
 
 restart: unless-stopped
 
+<div dir="rtl" align="right">
+
 دستورات پایه
+
+</div>
 
 docker compose config
 docker compose up -d
 docker compose ps
 docker compose logs -f
 docker compose down
+
+<div dir="rtl" align="right">
 
 جمع‌بندی روش کار
 
