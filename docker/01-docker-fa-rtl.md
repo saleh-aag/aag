@@ -6,55 +6,36 @@
 
 هدف این فایل آموزش <code dir="ltr">Dockerfile</code> یا <code dir="ltr">Docker Compose</code> نیست؛ آن دو در سند دوم بررسی می‌شوند. اینجا ابتدا باید خود <span dir="ltr">Docker</span>، <code dir="ltr">Image</code>، <code dir="ltr">Container</code>، <code dir="ltr">Port</code>، <code dir="ltr">Storage</code>، <code dir="ltr">Network</code> و چرخه‌ی اجرای <span dir="ltr">Container</span> را درست بفهمیم.
 
-<a id="toc"></a>
+<a id="toc" name="toc"></a>
 
 فهرست مطالب
 
-<span dir="ltr">Docker</span> چه مسئله‌ای را حل می‌کند؟
+<ol dir="rtl" align="right">
+  <li><a href="#docker-problem"><span dir="ltr">Docker</span> چه مسئله‌ای را حل می‌کند؟</a></li>
+  <li><a href="#container-vm"><span dir="ltr">Container</span> با <span dir="ltr">Virtual Machine</span> چه فرقی دارد؟</a></li>
+  <li><a href="#architecture">معماری <span dir="ltr">Docker</span></a></li>
+  <li><a href="#image-container"><span dir="ltr">Image</span> و <span dir="ltr">Container</span></a></li>
+  <li><a href="#first-run">اولین اجرای <span dir="ltr">Docker</span></a></li>
+  <li><a href="#docker-run">دستور <span dir="ltr">docker run</span> را درست بخوانیم</a></li>
+  <li><a href="#lifecycle">چرخه‌ی زندگی <span dir="ltr">Container</span></a></li>
+  <li><a href="#exec">ورود به <span dir="ltr">Container</span> و اجرای دستور با <span dir="ltr">exec</span></a></li>
+  <li><a href="#observe">مشاهده وضعیت، <span dir="ltr">Log</span> و <span dir="ltr">Inspect</span></a></li>
+  <li><a href="#ports"><span dir="ltr">Port</span> و <span dir="ltr">Port Mapping</span></a></li>
+  <li><a href="#environment"><span dir="ltr">Environment Variable</span></a></li>
+  <li><a href="#storage"><span dir="ltr">Storage: writable layer</span>، <span dir="ltr">docker cp</span>، <span dir="ltr">Bind Mount</span> و <span dir="ltr">Volume</span></a></li>
+  <li><a href="#cp-vs-bind">سناریوی عملی <span dir="ltr">docker cp</span> در برابر <span dir="ltr">Bind Mount</span></a></li>
+  <li><a href="#network"><span dir="ltr">Docker Network</span></a></li>
+  <li><a href="#images">مدیریت <span dir="ltr">Image</span>، <span dir="ltr">Tag</span> و <span dir="ltr">Registry</span></a></li>
+  <li><a href="#commit"><span dir="ltr">docker commit</span> چه زمانی مفید است؟</a></li>
+  <li><a href="#archive"><span dir="ltr">save/load</span> در برابر <span dir="ltr">export/import</span></a></li>
+  <li><a href="#cleanup">پاک‌سازی <span dir="ltr">Container</span> و <span dir="ltr">Image</span></a></li>
+  <li><a href="#errors">خطاهای رایج و روش فکر کردن برای <span dir="ltr">Debug</span></a></li>
+  <li><a href="#lab">تمرین نهایی</a></li>
+  <li><a href="#cheatsheet"><span dir="ltr">Cheat Sheet</span></a></li>
+  <li><a href="#next">بعد از این سند چه بخوانیم؟</a></li>
+</ol>
 
-<span dir="ltr">Container</span> با <span dir="ltr">Virtual Machine</span> چه فرقی دارد؟
-
-معماری <span dir="ltr">Docker</span>
-
-<span dir="ltr">Image</span> و <span dir="ltr">Container</span>
-
-اولین اجرای <span dir="ltr">Docker</span>
-
-دستور <span dir="ltr">docker run</span> را درست بخوانیم
-
-چرخه‌ی زندگی <span dir="ltr">Container</span>
-
-ورود به <span dir="ltr">Container</span> و اجرای دستور با <span dir="ltr">exec</span>
-
-مشاهده وضعیت، <span dir="ltr">Log</span> و <span dir="ltr">Inspect</span>
-
-<span dir="ltr">Port</span> و <span dir="ltr">Port Mapping</span>
-
-<span dir="ltr">Environment Variable</span>
-
-<span dir="ltr">Storage: writable layer</span>، <span dir="ltr">docker cp</span>، <span dir="ltr">Bind Mount</span> و <span dir="ltr">Volume</span>
-
-سناریوی عملی <span dir="ltr">docker cp</span> در برابر <span dir="ltr">Bind Mount</span>
-
-<span dir="ltr">Docker Network</span>
-
-مدیریت <span dir="ltr">Image</span>، <span dir="ltr">Tag</span> و <span dir="ltr">Registry</span>
-
-<span dir="ltr">docker commit</span> چه زمانی مفید است؟
-
-<span dir="ltr">save/load</span> در برابر <span dir="ltr">export/import</span>
-
-پاک‌سازی <span dir="ltr">Container</span> و <span dir="ltr">Image</span>
-
-خطاهای رایج و روش فکر کردن برای <span dir="ltr">Debug</span>
-
-تمرین نهایی
-
-<span dir="ltr">Cheat Sheet</span>
-
-بعد از این سند چه بخوانیم؟
-
-<a id="docker-problem"></a>
+<a id="docker-problem" name="docker-problem"></a>
 
 1. <span dir="ltr">Docker</span> چه مسئله‌ای را حل می‌کند؟
 
@@ -73,7 +54,7 @@ Application
 
 <span dir="ltr">Docker</span> قرار نیست <span dir="ltr">Host OS</span> را حذف کند. <span dir="ltr">Container</span> روی <span dir="ltr">Host</span> اجرا می‌شود و از <span dir="ltr">Kernel</span> آن استفاده می‌کند، اما <span dir="ltr">Process</span>ها، <span dir="ltr">File System</span> و <span dir="ltr">Network</span> خودش را به شکل ایزوله‌تری می‌بیند.
 
-<a id="container-vm"></a>
+<a id="container-vm" name="container-vm"></a>
 
 2. <span dir="ltr">Container</span> با <span dir="ltr">Virtual Machine</span> چه فرقی دارد؟
 
@@ -99,7 +80,7 @@ Hardware
 
 <span dir="ltr">Container</span>ها معمولاً سریع‌تر <span dir="ltr">Start</span> می‌شوند و سبک‌ترند، اما این نتیجه را نگیریم که <code dir="ltr">Container = VM کوچک</code>. این دو ابزار دقیقاً یک مسئله را حل نمی‌کنند.
 
-<a id="architecture"></a>
+<a id="architecture" name="architecture"></a>
 
 3. معماری <span dir="ltr">Docker</span>
 
@@ -129,7 +110,7 @@ Docker Daemon / Engine
 docker --version
 docker info
 
-<a id="image-container"></a>
+<a id="image-container" name="image-container"></a>
 
 4. <span dir="ltr">Image</span> و <span dir="ltr">Container</span>
 
@@ -169,7 +150,7 @@ Container
 docker system df
 docker system df -v
 
-<a id="first-run"></a>
+<a id="first-run" name="first-run"></a>
 
 5. اولین اجرای <span dir="ltr">Docker</span>
 
@@ -186,7 +167,7 @@ docker run hello-world
 
 پس <code dir="ltr">docker run</code> را فقط «روشن کردن» در نظر نگیر؛ معمولاً <span dir="ltr">Container</span> جدید می‌سازد و آن را اجرا می‌کند.
 
-<a id="docker-run"></a>
+<a id="docker-run" name="docker-run"></a>
 
 6. دستور <code dir="ltr">docker run</code> را درست بخوانیم
 
@@ -226,7 +207,7 @@ docker run -it myapp bash
 
 ممکن است به‌جای <span dir="ltr">Application</span>، <span dir="ltr">Bash</span> را اجرا کند.
 
-<a id="lifecycle"></a>
+<a id="lifecycle" name="lifecycle"></a>
 
 7. چرخه‌ی زندگی <span dir="ltr">Container</span>
 
@@ -262,7 +243,7 @@ docker start
 
 <code dir="ltr">-f</code> یعنی <span dir="ltr">Force.</span> در <span dir="ltr">Lab</span> مفید است، اما در محیط واقعی بدون دلیل از آن استفاده نکن.
 
-<a id="exec"></a>
+<a id="exec" name="exec"></a>
 
 8. ورود به <span dir="ltr">Container</span> و اجرای دستور با <code dir="ltr">exec</code>
 
@@ -290,7 +271,7 @@ docker exec -it web bash
 
 روی <span dir="ltr">Container</span> متوقف‌شده ابتدا باید <code dir="ltr">start</code> انجام شود.
 
-<a id="observe"></a>
+<a id="observe" name="observe"></a>
 
 9. مشاهده وضعیت، <span dir="ltr">Log</span> و <span dir="ltr">Inspect</span>
 
@@ -305,7 +286,7 @@ docker diff web
 
 <code dir="ltr">docker inspect</code> برای دیدن مواردی مثل <span dir="ltr">IP</span>، <span dir="ltr">Network</span>، <span dir="ltr">Mount</span>، <span dir="ltr">Environment Variable</span>، <span dir="ltr">Port Binding</span>، <span dir="ltr">State</span> و <span dir="ltr">Image</span> بسیار مهم است.
 
-<a id="ports"></a>
+<a id="ports" name="ports"></a>
 
 10. <span dir="ltr">Port</span> و <span dir="ltr">Port Mapping</span>
 
@@ -352,7 +333,7 @@ ss -tulpn
 
 <code dir="ltr">EXPOSE</code> بیشتر <span dir="ltr">Port</span> مورد انتظار <span dir="ltr">Image</span> را بیان می‌کند. <span dir="ltr">Publish</span> واقعی با <code dir="ltr">-p</code> یا تنظیم معادل در <span dir="ltr">Compose</span> انجام می‌شود.
 
-<a id="environment"></a>
+<a id="environment" name="environment"></a>
 
 11. <span dir="ltr">Environment Variable</span>
 
@@ -373,7 +354,7 @@ DB_HOST=database
 
 برای <span dir="ltr">Repository</span> عمومی، <span dir="ltr">Secret</span> واقعی را <span dir="ltr">Commit</span> نکن. <code dir="ltr">.env.example</code> برای نمایش نام <span dir="ltr">Variable</span>ها مناسب است.
 
-<a id="storage"></a>
+<a id="storage" name="storage"></a>
 
 12. <span dir="ltr">Storage: writable layer</span>، <code dir="ltr">docker cp</code>، <span dir="ltr">Bind Mount</span> و <span dir="ltr">Volume</span>
 
@@ -428,7 +409,7 @@ Bind Mount     → مسیر واقعی Host
 Named Volume   → Storage مدیریت‌شده Docker
 tmpfs          → Memory و موقت
 
-<a id="cp-vs-bind"></a>
+<a id="cp-vs-bind" name="cp-vs-bind"></a>
 
 13. سناریوی عملی <code dir="ltr">docker cp</code> در برابر <span dir="ltr">Bind Mount</span>
 
@@ -495,7 +476,7 @@ docker exec mounted cat /code/wilson.c
 
 بله
 
-<a id="network"></a>
+<a id="network" name="network"></a>
 
 14. <span dir="ltr">Docker Network</span>
 
@@ -540,7 +521,7 @@ macvlan  → سناریوهای خاص شبکه
 
 برای <span dir="ltr">Junior</span> مهم‌ترین بخش فعلاً <code dir="ltr">bridge</code> و <span dir="ltr">User-defined Network</span> است.
 
-<a id="images"></a>
+<a id="images" name="images"></a>
 
 15. مدیریت <span dir="ltr">Image</span>، <span dir="ltr">Tag</span> و <span dir="ltr">Registry</span>
 
@@ -558,7 +539,7 @@ docker tag myapp:1.0.0 myapp:stable
 
 REGISTRY/OWNER/IMAGE:TAG
 
-<a id="commit"></a>
+<a id="commit" name="commit"></a>
 
 16. <code dir="ltr">docker commit</code> چه زمانی مفید است؟
 
@@ -585,7 +566,7 @@ mylab:1.0.0
 
 برای <span dir="ltr">Lab</span> و <span dir="ltr">Snapshot</span> سریع مفید است، اما برای پروژه واقعی روش اصلی نیست؛ چون مراحل ساخت داخل <span dir="ltr">Code</span> ثبت نشده‌اند. در پروژه واقعی <code dir="ltr">Dockerfile</code> روش قابل‌تکرارتر است.
 
-<a id="archive"></a>
+<a id="archive" name="archive"></a>
 
 17. <code dir="ltr">save/load</code> در برابر <code dir="ltr">export/import</code>
 
@@ -647,7 +628,7 @@ docker import container.tar imported-app:1.0.0
 
 docker run -it imported-app:1.0.0 bash
 
-<a id="cleanup"></a>
+<a id="cleanup" name="cleanup"></a>
 
 18. پاک‌سازی <span dir="ltr">Container</span> و <span dir="ltr">Image</span>
 
@@ -678,7 +659,7 @@ docker system prune
 
 قبل از <code dir="ltr">volume prune</code> مطمئن شو <span dir="ltr">Data</span> مهمی حذف نمی‌شود.
 
-<a id="errors"></a>
+<a id="errors" name="errors"></a>
 
 19. خطاهای رایج و روش فکر کردن برای <span dir="ltr">Debug</span>
 
@@ -722,7 +703,7 @@ docker inspect web
 
 قبل از <code dir="ltr">rm -f</code> همه‌چیز، این مراحل اطلاعات بسیار بیشتری می‌دهند.
 
-<a id="lab"></a>
+<a id="lab" name="lab"></a>
 
 20. تمرین نهایی
 
@@ -772,7 +753,7 @@ docker network inspect lab-net
 
 اگر بتوانی بعد از این تمرین <code dir="ltr">Image</code>، <code dir="ltr">Container</code>، <code dir="ltr">run</code>، <code dir="ltr">start</code>، <code dir="ltr">exec</code>، <span dir="ltr">Port Mapping</span>، <span dir="ltr">Bind Mount</span>، <span dir="ltr">Network</span>، <code dir="ltr">inspect</code> و <code dir="ltr">logs</code> را توضیح دهی، آماده‌ی سند دوم هستی.
 
-<a id="cheatsheet"></a>
+<a id="cheatsheet" name="cheatsheet"></a>
 
 21. <span dir="ltr">Cheat Sheet</span>
 
@@ -824,7 +805,7 @@ docker run -p 8080:80 IMAGE
 docker run -e APP_ENV=dev IMAGE
 docker run --env-file .env IMAGE
 
-<a id="next"></a>
+<a id="next" name="next"></a>
 
 22. بعد از این سند چه بخوانیم؟
 
