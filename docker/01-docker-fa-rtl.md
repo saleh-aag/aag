@@ -9,7 +9,12 @@
 ---
 
 <a id="toc"></a>
+<details open>
+<summary>
+
 ## فهرست مطالب
+
+</summary>
 
 1. [Docker چه مسئله‌ای را حل می‌کند؟](#docker-problem)
 2. [Container با Virtual Machine چه فرقی دارد؟](#container-vm)
@@ -33,6 +38,8 @@
 20. [تمرین نهایی](#lab)
 21. [Cheat Sheet](#cheatsheet)
 22. [بعد از این سند چه بخوانیم؟](#next)
+
+</details>
 
 ---
 
