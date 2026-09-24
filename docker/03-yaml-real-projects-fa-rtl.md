@@ -1327,6 +1327,7 @@ Application runtime
 33. <span dir="ltr">Cheat Sheet</span> نهایی
 
 ساختار YAML
+```yaml
 
 </div>
 
@@ -1476,7 +1477,7 @@ Restart
 restart: unless-stopped
 
 <div dir="rtl" align="right">
-
+```
 دستورات پایه
 
 </div>
