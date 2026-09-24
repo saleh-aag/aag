@@ -43,14 +43,14 @@
 
 اگر این وابستگی‌ها را مستقیماً روی هر <span dir="ltr">Server</span> یا <span dir="ltr">Laptop</span> نصب کنیم، خیلی زود با تفاوت نسخه‌ها و تداخل <span dir="ltr">Package</span>ها روبه‌رو می‌شویم. <span dir="ltr">Docker</span> کمک می‌کند محیط اجرای برنامه را به شکل استاندارد بسته‌بندی و اجرا کنیم.
 
-Application
+<pre dir="ltr"><code>Application
 + Runtime
 + Dependencies
 + Configuration
         ↓
       Image
         ↓
-   Container
+   Container</code></pre>
 
 <span dir="ltr">Docker</span> قرار نیست <span dir="ltr">Host OS</span> را حذف کند. <span dir="ltr">Container</span> روی <span dir="ltr">Host</span> اجرا می‌شود و از <span dir="ltr">Kernel</span> آن استفاده می‌کند، اما <span dir="ltr">Process</span>ها، <span dir="ltr">File System</span> و <span dir="ltr">Network</span> خودش را به شکل ایزوله‌تری می‌بیند.
 
@@ -60,23 +60,23 @@ Application
 
 <span dir="ltr">Virtual Machine</span> معمولاً یک <span dir="ltr">Guest OS</span> کامل دارد:
 
-Hardware
+<pre dir="ltr"><code>Hardware
 └── Host OS
     └── Hypervisor
         ├── Guest OS A
         │   └── Application
         └── Guest OS B
-            └── Application
+            └── Application</code></pre>
 
 <span dir="ltr">Container</span>ها معمولاً <span dir="ltr">Kernel Host</span> را به اشتراک می‌گذارند:
 
-Hardware
+<pre dir="ltr"><code>Hardware
 └── Host OS
     └── Docker Engine
         ├── Container A
         │   └── Application
         └── Container B
-            └── Application
+            └── Application</code></pre>
 
 <span dir="ltr">Container</span>ها معمولاً سریع‌تر <span dir="ltr">Start</span> می‌شوند و سبک‌ترند، اما این نتیجه را نگیریم که <code dir="ltr">Container = VM کوچک</code>. این دو ابزار دقیقاً یک مسئله را حل نمی‌کنند.
 
@@ -90,7 +90,7 @@ docker run nginx
 
 چند جزء درگیر هستند:
 
-You
+<pre dir="ltr"><code>You
  │
  ▼
 Docker CLI
@@ -101,7 +101,7 @@ Docker Daemon / Engine
  ├── Images
  ├── Containers
  ├── Networks
- └── Volumes
+ └── Volumes</code></pre>
 
 <code dir="ltr">Docker CLI</code> همان دستورهایی است که می‌نویسیم. <code dir="ltr">Docker Daemon</code> عملیات واقعی را انجام می‌دهد. <code dir="ltr">Registry</code> هم محل نگهداری <span dir="ltr">Image</span>هاست و <span dir="ltr">Docker Hub</span> یکی از <span dir="ltr">Registry</span>های شناخته‌شده است.
 
@@ -118,10 +118,10 @@ docker info
 
 <span dir="ltr">Image</span> یک الگوی آماده برای ساخت <span dir="ltr">Container</span> است:
 
-ubuntu:24.04
+<pre dir="ltr"><code>ubuntu:24.04
 nginx:alpine
 python:3.13-slim
-node:22
+node:22</code></pre>
 
 <span dir="ltr">Image</span> خودش <span dir="ltr">Process</span> در حال اجرا نیست.
 
@@ -129,19 +129,19 @@ node:22
 
 <span dir="ltr">Container</span> نمونه‌ای است که از روی <span dir="ltr">Image</span> ساخته و اجرا می‌شود:
 
-nginx:alpine
+<pre dir="ltr"><code>nginx:alpine
      │
      ├── web-1
      ├── web-2
-     └── web-3
+     └── web-3</code></pre>
 
 مدل ذهنی:
 
-Image
+<pre dir="ltr"><code>Image
 = الگو / بسته‌ی ساخت Container
 
 Container
-= Instance قابل اجرا از Image
+= Instance قابل اجرا از Image</code></pre>
 
 <span dir="ltr">Layer</span>
 
@@ -158,12 +158,12 @@ docker run hello-world
 
 مدل آموزشی:
 
-docker run hello-world
+<pre dir="ltr"><code>docker run hello-world
         │
         ├── Image محلی وجود دارد؟
         ├── اگر نه: Pull
         ├── Create Container
-        └── Start Container
+        └── Start Container</code></pre>
 
 پس <code dir="ltr">docker run</code> را فقط «روشن کردن» در نظر نگیر؛ معمولاً <span dir="ltr">Container</span> جدید می‌سازد و آن را اجرا می‌کند.
 
@@ -211,7 +211,7 @@ docker run -it myapp bash
 
 7. چرخه‌ی زندگی <span dir="ltr">Container</span>
 
-Created
+<pre dir="ltr"><code>Created
    │
    ▼
 Running
@@ -221,7 +221,7 @@ Running
 Stopped / Exited
    │
    ├── start ─────→ Running
-   └── rm ────────→ Deleted
+   └── rm ────────→ Deleted</code></pre>
 
 دستورهای اصلی:
 
@@ -235,11 +235,11 @@ docker rm -f web
 
 تفاوت مهم:
 
-docker run
+<pre dir="ltr"><code>docker run
 → معمولاً Container جدید می‌سازد و اجرا می‌کند
 
 docker start
-→ همان Container موجود را دوباره اجرا می‌کند
+→ همان Container موجود را دوباره اجرا می‌کند</code></pre>
 
 <code dir="ltr">-f</code> یعنی <span dir="ltr">Force.</span> در <span dir="ltr">Lab</span> مفید است، اما در محیط واقعی بدون دلیل از آن استفاده نکن.
 
@@ -263,11 +263,11 @@ docker exec -it web sh
 
 تفاوت:
 
-docker start web
+<pre dir="ltr"><code>docker start web
 → خود Container را Running می‌کند
 
 docker exec -it web bash
-→ داخل Container Running یک Process جدید باز می‌کند
+→ داخل Container Running یک Process جدید باز می‌کند</code></pre>
 
 روی <span dir="ltr">Container</span> متوقف‌شده ابتدا باید <code dir="ltr">start</code> انجام شود.
 
@@ -300,7 +300,7 @@ docker diff web
 
 docker run -p 2000:3000 myapp
 
-Browser / curl
+<pre dir="ltr"><code>Browser / curl
       ↓
 Host :2000
       ↓
@@ -308,7 +308,7 @@ Docker
       ↓
 Container :3000
       ↓
-Application
+Application</code></pre>
 
 <span dir="ltr">Host Port</span> لازم نیست با <span dir="ltr">Container Port</span> یکی باشد:
 
@@ -369,17 +369,17 @@ docker cp web:/tmp/file.txt ./file.txt
 
 قاعده:
 
-docker cp
+<pre dir="ltr"><code>docker cp
 = Copy
-≠ Sync
+≠ Sync</code></pre>
 
 <span dir="ltr">Bind Mount</span>
 
 docker run -v "$PWD":/app myapp
 
-Host directory
+<pre dir="ltr"><code>Host directory
      ⇅
-Container directory
+Container directory</code></pre>
 
 برای <span dir="ltr">Development</span> مفید است؛ تغییر <span dir="ltr">Host</span> داخل <span dir="ltr">Container</span> دیده می‌شود. اما حذف یا تغییر فایل <span dir="ltr">Mount</span>‌شده داخل <span dir="ltr">Container</span> می‌تواند روی <span dir="ltr">Host</span> هم اثر بگذارد.
 
@@ -404,10 +404,10 @@ docker run --tmpfs /cache nginx
 
 مدل نهایی:
 
-Writable layer → وابسته به عمر Container
+<pre dir="ltr"><code>Writable layer → وابسته به عمر Container
 Bind Mount     → مسیر واقعی Host
 Named Volume   → Storage مدیریت‌شده Docker
-tmpfs          → Memory و موقت
+tmpfs          → Memory و موقت</code></pre>
 
 <a id="cp-vs-bind" name="cp-vs-bind"></a>
 
@@ -496,11 +496,11 @@ docker run -d --name backend --network app-net my-backend
 
 در <span dir="ltr">User-defined Network</span>، بهتر است از نام <span dir="ltr">Container/Service</span> استفاده کنیم:
 
-database:5432
+<pre dir="ltr"><code>database:5432</code></pre>
 
 نه <span dir="ltr">IP</span> موقت:
 
-172.18.0.5:5432
+<pre dir="ltr"><code>172.18.0.5:5432</code></pre>
 
 بررسی:
 
@@ -513,11 +513,11 @@ docker network disconnect app-net web
 
 <span dir="ltr">Driver</span>هایی که فعلاً باید اسمشان را بشناسی:
 
-bridge   → رایج روی یک Host
+<pre dir="ltr"><code>bridge   → رایج روی یک Host
 host     → استفاده نزدیک‌تر از Network Host
 none     → بدون Network معمول Docker
 overlay  → سناریوهای چند Host
-macvlan  → سناریوهای خاص شبکه
+macvlan  → سناریوهای خاص شبکه</code></pre>
 
 برای <span dir="ltr">Junior</span> مهم‌ترین بخش فعلاً <code dir="ltr">bridge</code> و <span dir="ltr">User-defined Network</span> است.
 
@@ -537,7 +537,7 @@ docker tag myapp:1.0.0 myapp:stable
 
 الگوی رایج نام <span dir="ltr">Image:</span>
 
-REGISTRY/OWNER/IMAGE:TAG
+<pre dir="ltr"><code>REGISTRY/OWNER/IMAGE:TAG</code></pre>
 
 <a id="commit" name="commit"></a>
 
@@ -556,13 +556,13 @@ exit
 
 docker commit lab mylab:1.0.0
 
-ubuntu
+<pre dir="ltr"><code>ubuntu
   ↓
 lab container
   ↓ manual changes
 docker commit
   ↓
-mylab:1.0.0
+mylab:1.0.0</code></pre>
 
 برای <span dir="ltr">Lab</span> و <span dir="ltr">Snapshot</span> سریع مفید است، اما برای پروژه واقعی روش اصلی نیست؛ چون مراحل ساخت داخل <span dir="ltr">Code</span> ثبت نشده‌اند. در پروژه واقعی <code dir="ltr">Dockerfile</code> روش قابل‌تکرارتر است.
 
@@ -574,22 +574,22 @@ mylab:1.0.0
 
 <span dir="ltr">Image</span>
 
-Image
+<pre dir="ltr"><code>Image
   ↓ docker save
 tar
   ↓ docker load
-Image
+Image</code></pre>
 
 docker save myapp:1.0.0 -o myapp.tar
 docker load -i myapp.tar
 
 <span dir="ltr">Container File System</span>
 
-Container
+<pre dir="ltr"><code>Container
   ↓ docker export
 tar
   ↓ docker import
-New Image
+New Image</code></pre>
 
 docker export mycontainer -o container.tar
 docker import container.tar imported-app:1.0.0
@@ -680,9 +680,9 @@ docker exec -it web bash
 
 این سه سؤال را بررسی کن:
 
-Application Running است؟
+<pre dir="ltr"><code>Application Running است؟
 داخل Container روی چه Portی Listen می‌کند؟
-روی 0.0.0.0 گوش می‌دهد یا فقط 127.0.0.1؟
+روی 0.0.0.0 گوش می‌دهد یا فقط 127.0.0.1؟</code></pre>
 
 ابزارها:
 
@@ -695,11 +695,11 @@ docker inspect web
 
 مدل <span dir="ltr">Debug</span> پنج مرحله‌ای
 
-1. State   → docker ps -a
+<pre dir="ltr"><code>1. State   → docker ps -a
 2. Logs    → docker logs
 3. Config  → docker inspect
 4. Process / Port
-5. Storage / Network
+5. Storage / Network</code></pre>
 
 قبل از <code dir="ltr">rm -f</code> همه‌چیز، این مراحل اطلاعات بسیار بیشتری می‌دهند.
 
@@ -809,7 +809,7 @@ docker run --env-file .env IMAGE
 
 22. بعد از این سند چه بخوانیم؟
 
-Docker پایه
+<pre dir="ltr"><code>Docker پایه
    ↓
 Dockerfile
    ↓
@@ -819,7 +819,7 @@ Docker Compose
    ↓
 Multi-container Application
    ↓
-CI/CD و Deployment
+CI/CD و Deployment</code></pre>
 
 سند دوم از همین نقطه شروع می‌شود: ساخت <span dir="ltr">Image</span> قابل‌تکرار با <code dir="ltr">Dockerfile</code> و مدیریت چند <span dir="ltr">Service</span> با <code dir="ltr">Docker Compose</code>.
 
