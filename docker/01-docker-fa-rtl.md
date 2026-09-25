@@ -45,6 +45,42 @@
 ---
 
 <a id="docker-problem"></a>
+
+| سرویس                   | پورت پیش‌فرض | کاربرد               |
+| ----------------------- | -----------: | -------------------- |
+| **Nginx**               |         `80` | HTTP                 |
+| **Nginx**               |        `443` | HTTPS                |
+| **Apache**              |         `80` | HTTP                 |
+| **SSH**                 |         `22` | اتصال SSH            |
+| **FTP**                 |         `21` | FTP                  |
+| **DNS**                 |         `53` | DNS                  |
+| **MySQL / MariaDB**     |       `3306` | دیتابیس              |
+| **PostgreSQL**          |       `5432` | دیتابیس              |
+| **MongoDB**             |      `27017` | NoSQL                |
+| **Redis**               |       `6379` | Cache / Database     |
+| **Memcached**           |      `11211` | Cache                |
+| **RabbitMQ**            |       `5672` | AMQP                 |
+| **RabbitMQ Management** |      `15672` | پنل وب RabbitMQ      |
+| **Kafka**               |       `9092` | Kafka                |
+| **Elasticsearch**       |       `9200` | REST API             |
+| **Elasticsearch**       |       `9300` | ارتباط داخلی Nodeها  |
+| **Kibana**              |       `5601` | Web UI               |
+| **Prometheus**          |       `9090` | Monitoring           |
+| **Grafana**             |       `3000` | Monitoring Dashboard |
+| **Jenkins**             |       `8080` | Web UI               |
+| **Jenkins Agent**       |      `50000` | ارتباط Agent         |
+| **Docker Registry**     |       `5000` | Private Registry     |
+| **cAdvisor**            |       `8080` | Container monitoring |
+| **Portainer**           |       `9000` | Docker Management    |
+| **Portainer HTTPS**     |       `9443` | پنل HTTPS            |
+| **Node.js**             |       `3000` | Web Application      |
+| **React Dev Server**    |       `3000` | Development          |
+| **Next.js**             |       `3000` | Web Application      |
+| **Flask**               |       `5000` | Web Application      |
+| **Django**              |       `8000` | Web Application      |
+| **Spring Boot**         |       `8080` | Web Application      |
+| **PHP-FPM**             |       `9000` | PHP FastCGI          |
+
 ## 1. Docker چه مسئله‌ای را حل می‌کند؟
 
 یک برنامه معمولاً فقط «کد» نیست. ممکن است برای اجرا به نسخه‌ی مشخصی از `Python` یا `Node.js`، Libraryها، Environment Variableها، فایل Configuration و ابزارهای سیستم‌عاملی نیاز داشته باشد.
