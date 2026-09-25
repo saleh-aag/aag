@@ -16,6 +16,7 @@
 
 <ul>
   <li><a href="#before-start">قبل از شروع — سرور را آوردی بالا، حالا کجایی؟</a></li>
+  <li><a href="#docker-login">ورود به Docker Hub — Login از طریق Terminal و Docker Desktop</a></li>
   <li><a href="#scenario-1">سناریو ۱ — اولین Container و چرخهٔ run / stop / start / exec</a></li>
   <li><a href="#scenario-2">سناریو ۲ — تغییر داخل Container و فهم ماندگاری آن</a></li>
   <li><a href="#scenario-3">سناریو ۳ — commit و tag؛ ساخت Image از یک Container تغییرکرده</a></li>
