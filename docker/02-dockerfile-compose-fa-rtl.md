@@ -1,55 +1,58 @@
 <div dir="rtl" align="right">
 
-<span dir="ltr">Dockerfile</span> و <span dir="ltr">Docker Compose</span> در پروژه‌های واقعی
 
-این سند ادامه‌ی راهنمای <span dir="ltr">Docker</span> است. فرض می‌کنیم مفاهیم <code dir="ltr">Image</code>، <code dir="ltr">Container</code>، <code dir="ltr">Port Mapping</code>، <code dir="ltr">Volume</code> و <code dir="ltr">Network</code> را می‌دانیم.
+# Dockerfile و Docker Compose در پروژه‌های واقعی
+
+این سند ادامه‌ی راهنمای Docker است. فرض می‌کنیم مفاهیم `Image`، `Container`، `Port Mapping`، `Volume` و `Network` را می‌دانیم.
 
 هدف این فایل پاسخ به دو سؤال است:
 
-چگونه محیط اجرای یک <span dir="ltr">Application</span> را به شکل قابل‌تکرار با <code dir="ltr">Dockerfile</code> بسازیم؟
+1. چگونه محیط اجرای یک Application را به شکل قابل‌تکرار با `Dockerfile` بسازیم؟
+2. چگونه چند Service مرتبط را با `Docker Compose` به عنوان یک پروژه واحد اجرا و مدیریت کنیم؟
 
-چگونه چند <span dir="ltr">Service</span> مرتبط را با <code dir="ltr">Docker Compose</code> به عنوان یک پروژه واحد اجرا و مدیریت کنیم؟
+---
 
-<a id="toc" name="toc"></a>
+<a id="toc"></a>
+## فهرست مطالب
 
-فهرست مطالب
+1. [Dockerfile و Compose چه مسئله‌ای را حل می‌کنند؟](#purpose)
+2. [Dockerfile چیست؟](#dockerfile)
+3. [دستورهای اصلی Dockerfile](#dockerfile-instructions)
+4. [Build Context و .dockerignore](#build-context)
+5. [Layer و Build Cache](#cache)
+6. [CMD و ENTRYPOINT](#cmd-entrypoint)
+7. [COPY و Bind Mount](#copy-bind)
+8. [سناریوی Node.js: از Dockerfile تا Image](#node)
+9. [سناریوی Flask: Application داخل Container](#flask)
+10. [Docker Compose چیست؟](#compose)
+11. [ساختار compose.yaml](#compose-structure)
+12. [Service و تنظیمات اصلی آن](#service)
+13. [Network در Compose](#compose-network)
+14. [Volume و Bind Mount در Compose](#compose-storage)
+15. [.env، environment و env_file](#compose-env)
+16. [depends_on و healthcheck](#health)
+17. [restart، command و entrypoint](#runtime-options)
+18. [سناریوی پروژه واقعی Backend + PostgreSQL + Nginx](#real-project)
+19. [چرخه کار روزانه با Docker Compose](#workflow)
+20. [Development در برابر Production](#dev-prod)
+21. [Debug و Troubleshooting](#debug)
+22. [اشتباهات رایج](#mistakes)
+23. [Cheat Sheet](#cheatsheet)
+24. [آمادگی برای سند YAML](#next)
 
-<ol dir="rtl" align="right">
-  <li><a href="#purpose"><span dir="ltr">Dockerfile</span> و <span dir="ltr">Compose</span> چه مسئله‌ای را حل می‌کنند؟</a></li>
-  <li><a href="#dockerfile"><span dir="ltr">Dockerfile</span> چیست؟</a></li>
-  <li><a href="#dockerfile-instructions">دستورهای اصلی <span dir="ltr">Dockerfile</span></a></li>
-  <li><a href="#build-context"><span dir="ltr">Build Context</span> و .<span dir="ltr">dockerignore</span></a></li>
-  <li><a href="#cache"><span dir="ltr">Layer</span> و <span dir="ltr">Build Cache</span></a></li>
-  <li><a href="#cmd-entrypoint"><span dir="ltr">CMD</span> و <span dir="ltr">ENTRYPOINT</span></a></li>
-  <li><a href="#copy-bind"><span dir="ltr">COPY</span> و <span dir="ltr">Bind Mount</span></a></li>
-  <li><a href="#node">سناریوی <span dir="ltr">Node.js:</span> از <span dir="ltr">Dockerfile</span> تا <span dir="ltr">Image</span></a></li>
-  <li><a href="#flask">سناریوی <span dir="ltr">Flask: Application</span> داخل <span dir="ltr">Container</span></a></li>
-  <li><a href="#compose"><span dir="ltr">Docker Compose</span> چیست؟</a></li>
-  <li><a href="#compose-structure">ساختار <span dir="ltr">compose.yaml</span></a></li>
-  <li><a href="#service"><span dir="ltr">Service</span> و تنظیمات اصلی آن</a></li>
-  <li><a href="#compose-network"><span dir="ltr">Network</span> در <span dir="ltr">Compose</span></a></li>
-  <li><a href="#compose-storage"><span dir="ltr">Volume</span> و <span dir="ltr">Bind Mount</span> در <span dir="ltr">Compose</span></a></li>
-  <li><a href="#compose-env">.<span dir="ltr">env</span>، <span dir="ltr">environment</span> و <span dir="ltr">env_file</span></a></li>
-  <li><a href="#health"><span dir="ltr">depends_on</span> و <span dir="ltr">healthcheck</span></a></li>
-  <li><a href="#runtime-options"><span dir="ltr">restart</span>، <span dir="ltr">command</span> و <span dir="ltr">entrypoint</span></a></li>
-  <li><a href="#real-project">سناریوی پروژه واقعی <span dir="ltr">Backend</span> + <span dir="ltr">PostgreSQL</span> + <span dir="ltr">Nginx</span></a></li>
-  <li><a href="#workflow">چرخه کار روزانه با <span dir="ltr">Docker Compose</span></a></li>
-  <li><a href="#dev-prod"><span dir="ltr">Development</span> در برابر <span dir="ltr">Production</span></a></li>
-  <li><a href="#debug"><span dir="ltr">Debug</span> و <span dir="ltr">Troubleshooting</span></a></li>
-  <li><a href="#mistakes">اشتباهات رایج</a></li>
-  <li><a href="#cheatsheet"><span dir="ltr">Cheat Sheet</span></a></li>
-  <li><a href="#next">آمادگی برای سند <span dir="ltr">YAML</span></a></li>
-</ol>
+---
 
-<a id="purpose" name="purpose"></a>
+<a id="purpose"></a>
+## 1. Dockerfile و Compose چه مسئله‌ای را حل می‌کنند؟
 
-1. <span dir="ltr">Dockerfile</span> و <span dir="ltr">Compose</span> چه مسئله‌ای را حل می‌کنند؟
-
-با <span dir="ltr">Docker</span> خام می‌توانیم <span dir="ltr">Container</span> بسازیم، اما اگر ساخت محیط <span dir="ltr">Application</span> را دستی انجام دهیم، مراحل قابل‌تکرار نیستند.
+با Docker خام می‌توانیم Container بسازیم، اما اگر ساخت محیط Application را دستی انجام دهیم، مراحل قابل‌تکرار نیستند.
 
 مثلاً این روند:
 
-<pre dir="ltr"><code>Ubuntu Container
+</div>
+
+```text
+Ubuntu Container
    ↓
 apt install ...
    ↓
@@ -57,46 +60,73 @@ pip install ...
    ↓
 copy source code
    ↓
-start app</code></pre>
+start app
+```
 
-اگر فقط در <span dir="ltr">Terminal</span> انجام شود، عضو بعدی تیم دقیقاً نمی‌داند چه کارهایی انجام شده است.
+<div dir="rtl" align="right">
 
-<code dir="ltr">Dockerfile</code> مراحل ساخت <span dir="ltr">Image</span> را تبدیل به <span dir="ltr">Code</span> می‌کند:
 
-<pre dir="ltr"><code>Dockerfile
+اگر فقط در Terminal انجام شود، عضو بعدی تیم دقیقاً نمی‌داند چه کارهایی انجام شده است.
+
+`Dockerfile` مراحل ساخت Image را تبدیل به Code می‌کند:
+
+</div>
+
+```text
+Dockerfile
    ↓
 docker build
    ↓
-Image</code></pre>
+Image
+```
+
+<div dir="rtl" align="right">
+
 
 اگر پروژه چند بخش داشته باشد:
 
-<pre dir="ltr"><code>Frontend
+</div>
+
+```text
+Frontend
 Backend
 Database
 Redis
-Nginx</code></pre>
+Nginx
+```
 
-مدیریت همه‌ی آن‌ها با چندین <code dir="ltr">docker run</code> سخت می‌شود. <code dir="ltr">Docker Compose</code> تنظیم اجرای کل <span dir="ltr">Stack</span> را در یک فایل تعریف می‌کند.
+<div dir="rtl" align="right">
+
+
+مدیریت همه‌ی آن‌ها با چندین `docker run` سخت می‌شود. `Docker Compose` تنظیم اجرای کل Stack را در یک فایل تعریف می‌کند.
 
 پس:
 
-<table dir="rtl">
-  <thead><tr><th>ابزار</th><th>سؤال اصلی که پاسخ می‌دهد</th></tr></thead>
-  <tbody>
-    <tr><td><code dir="ltr">Dockerfile</code></td><td><span dir="ltr">Image</span> پروژه چگونه ساخته شود؟</td></tr>
-    <tr><td><code dir="ltr">Docker Compose</code></td><td><span dir="ltr">Service</span>های پروژه چگونه کنار هم تعریف و اجرا شوند؟</td></tr>
-  </tbody>
-</table>
+</div>
 
-<a id="dockerfile" name="dockerfile"></a>
+```text
+Dockerfile
+→ چگونه Image ساخته شود؟
 
-2. <span dir="ltr">Dockerfile</span> چیست؟
+Docker Compose
+→ Serviceهای پروژه چگونه کنار هم اجرا شوند؟
+```
 
-<code dir="ltr">Dockerfile</code> فایل متنی‌ای است که مراحل ساخت <span dir="ltr">Image</span> را تعریف می‌کند.
+<div dir="rtl" align="right">
+
+
+---
+
+<a id="dockerfile"></a>
+## 2. Dockerfile چیست؟
+
+`Dockerfile` فایل متنی‌ای است که مراحل ساخت Image را تعریف می‌کند.
 
 نمونه ساده:
 
+</div>
+
+```dockerfile
 FROM python:3.13-slim
 
 WORKDIR /app
@@ -108,10 +138,17 @@ RUN pip install flask
 EXPOSE 4000
 
 CMD ["python", "app.py"]
+```
+
+<div dir="rtl" align="right">
+
 
 مدل ذهنی:
 
-<pre dir="ltr"><code>Base Image
+</div>
+
+```text
+Base Image
    ↓
 Working Directory
    ↓
@@ -121,286 +158,564 @@ Application Files
    ↓
 Default Runtime Command
    ↓
-Final Image</code></pre>
+Final Image
+```
 
-<span dir="ltr">Build:</span>
+<div dir="rtl" align="right">
 
+
+Build:
+
+</div>
+
+```bash
 docker build -t myapp:1.0.0 .
+```
 
-<span dir="ltr">Run:</span>
+<div dir="rtl" align="right">
 
+
+Run:
+
+</div>
+
+```bash
 docker run -p 4000:4000 myapp:1.0.0
+```
 
-<a id="dockerfile-instructions" name="dockerfile-instructions"></a>
+<div dir="rtl" align="right">
 
-3. دستورهای اصلی <span dir="ltr">Dockerfile</span>
 
-<code dir="ltr">FROM</code>
+---
 
+<a id="dockerfile-instructions"></a>
+## 3. دستورهای اصلی Dockerfile
+
+### `FROM`
+
+</div>
+
+```dockerfile
 FROM node:22
+```
 
-<span dir="ltr">Base Image</span> را تعیین می‌کند.
+<div dir="rtl" align="right">
 
-<code dir="ltr">WORKDIR</code>
 
+Base Image را تعیین می‌کند.
+
+### `WORKDIR`
+
+</div>
+
+```dockerfile
 WORKDIR /app
+```
 
-مسیر کاری داخل <span dir="ltr">Image</span> را مشخص می‌کند. مدل ذهنی تقریبی آن شبیه <code dir="ltr">cd /app</code> است.
+<div dir="rtl" align="right">
 
-<code dir="ltr">COPY</code>
 
+مسیر کاری داخل Image را مشخص می‌کند. مدل ذهنی تقریبی آن شبیه `cd /app` است.
+
+### `COPY`
+
+</div>
+
+```dockerfile
 COPY app.js .
+```
 
-اگر <code dir="ltr">WORKDIR /app</code> باشد:
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>Host ./app.js
+
+اگر `WORKDIR /app` باشد:
+
+</div>
+
+```text
+Host ./app.js
      ↓ COPY
-Image /app/app.js</code></pre>
+Image /app/app.js
+```
 
-<code dir="ltr">COPY</code> اتصال زنده نیست؛ نسخه فایل در زمان <span dir="ltr">Build</span> وارد <span dir="ltr">Image</span> می‌شود.
+<div dir="rtl" align="right">
 
-<code dir="ltr">RUN</code>
 
+`COPY` اتصال زنده نیست؛ نسخه فایل در زمان Build وارد Image می‌شود.
+
+### `RUN`
+
+</div>
+
+```dockerfile
 RUN npm install
+```
+
+<div dir="rtl" align="right">
+
 
 یا:
 
+</div>
+
+```dockerfile
 RUN pip install -r requirements.txt
+```
 
-در زمان <span dir="ltr">Build</span> اجرا می‌شود.
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>RUN
+
+در زمان Build اجرا می‌شود.
+
+</div>
+
+```text
+RUN
 → Build time
 
 CMD / ENTRYPOINT
-→ Container runtime</code></pre>
+→ Container runtime
+```
 
-<code dir="ltr">ENV</code>
+<div dir="rtl" align="right">
 
+
+### `ENV`
+
+</div>
+
+```dockerfile
 ENV APP_ENV=production
+```
 
-<span dir="ltr">Environment Variable</span> پیش‌فرض داخل <span dir="ltr">Image.</span>
+<div dir="rtl" align="right">
 
-<code dir="ltr">ARG</code>
 
+Environment Variable پیش‌فرض داخل Image.
+
+### `ARG`
+
+</div>
+
+```dockerfile
 ARG APP_VERSION=dev
+```
 
-برای <span dir="ltr">Build-time variable.</span>
+<div dir="rtl" align="right">
 
+
+برای Build-time variable.
+
+</div>
+
+```bash
 docker build \
   --build-arg APP_VERSION=1.2.0 \
   -t myapp:1.2.0 .
+```
 
-<pre dir="ltr"><code>ARG → Build time
-ENV → Image / Runtime environment</code></pre>
+<div dir="rtl" align="right">
 
-<code dir="ltr">EXPOSE</code>
+</div>
 
+```text
+ARG → Build time
+ENV → Image / Runtime environment
+```
+
+<div dir="rtl" align="right">
+
+
+### `EXPOSE`
+
+</div>
+
+```dockerfile
 EXPOSE 3000
+```
 
-<span dir="ltr">Port</span> مورد انتظار <span dir="ltr">Application</span> را بیان می‌کند، اما <span dir="ltr">Port</span> را روی <span dir="ltr">Host Publish</span> نمی‌کند.
+<div dir="rtl" align="right">
 
-<span dir="ltr">Publish</span> واقعی:
 
+Port مورد انتظار Application را بیان می‌کند، اما Port را روی Host Publish نمی‌کند.
+
+Publish واقعی:
+
+</div>
+
+```bash
 docker run -p 8080:3000 myapp
+```
 
-<code dir="ltr">CMD</code>
+<div dir="rtl" align="right">
 
+
+### `CMD`
+
+</div>
+
+```dockerfile
 CMD ["node", "app.js"]
+```
 
-<span dir="ltr">Command</span> پیش‌فرض <span dir="ltr">Container.</span>
+<div dir="rtl" align="right">
 
-<code dir="ltr">ENTRYPOINT</code>
 
+Command پیش‌فرض Container.
+
+### `ENTRYPOINT`
+
+</div>
+
+```dockerfile
 ENTRYPOINT ["python", "app.py"]
+```
 
-<span dir="ltr">Executable</span> اصلی <span dir="ltr">Container</span> را تعریف می‌کند.
+<div dir="rtl" align="right">
 
-<code dir="ltr">USER</code>
 
+Executable اصلی Container را تعریف می‌کند.
+
+### `USER`
+
+</div>
+
+```dockerfile
 USER appuser
+```
 
-در پروژه واقعی اجرای <span dir="ltr">Application</span> با <span dir="ltr">User</span> غیر <span dir="ltr">root</span> معمولاً الگوی امن‌تری است، به شرط این‌که <span dir="ltr">Permission</span>ها درست تنظیم شده باشند.
+<div dir="rtl" align="right">
 
-<code dir="ltr">HEALTHCHECK</code>
 
+در پروژه واقعی اجرای Application با User غیر root معمولاً الگوی امن‌تری است، به شرط این‌که Permissionها درست تنظیم شده باشند.
+
+### `HEALTHCHECK`
+
+</div>
+
+```dockerfile
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD curl -f http://localhost:3000/health || exit 1
+```
 
-در بسیاری از پروژه‌ها <span dir="ltr">Healthcheck</span> را در <span dir="ltr">Compose</span> تعریف می‌کنند تا <span dir="ltr">Runtime Configuration</span> کنار بقیه <span dir="ltr">Service</span>ها باشد.
+<div dir="rtl" align="right">
 
-<a id="build-context" name="build-context"></a>
 
-4. <span dir="ltr">Build Context</span> و <code dir="ltr">.dockerignore</code>
+در بسیاری از پروژه‌ها Healthcheck را در Compose تعریف می‌کنند تا Runtime Configuration کنار بقیه Serviceها باشد.
 
+---
+
+<a id="build-context"></a>
+## 4. Build Context و `.dockerignore`
+
+</div>
+
+```bash
 docker build -t myapp .
+```
 
-نقطه آخر یعنی <span dir="ltr">Build Context</span> پوشه فعلی است.
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>project/
+
+نقطه آخر یعنی Build Context پوشه فعلی است.
+
+</div>
+
+```text
+project/
 ├── app.js
 ├── package.json
-└── Dockerfile</code></pre>
+└── Dockerfile
+```
 
-وقتی <span dir="ltr">Dockerfile</span> می‌گوید:
+<div dir="rtl" align="right">
 
+
+وقتی Dockerfile می‌گوید:
+
+</div>
+
+```dockerfile
 COPY app.js .
+```
 
-<span dir="ltr">Docker</span> فایل را از <span dir="ltr">Context</span> پیدا می‌کند.
+<div dir="rtl" align="right">
 
-اگر <span dir="ltr">Context</span> را <code dir="ltr">./backend</code> بدهیم:
 
+Docker فایل را از Context پیدا می‌کند.
+
+اگر Context را `./backend` بدهیم:
+
+</div>
+
+```bash
 docker build -t backend ./backend
+```
 
-<span dir="ltr">Dockerfile</span> به فایل‌های خارج از <span dir="ltr">Context</span> دسترسی مستقیم ندارد.
+<div dir="rtl" align="right">
 
-<code dir="ltr">.dockerignore</code>
 
-<pre dir="ltr"><code>node_modules
+Dockerfile به فایل‌های خارج از Context دسترسی مستقیم ندارد.
+
+### `.dockerignore`
+
+</div>
+
+```text
+node_modules
 .git
 .env
 *.log
 __pycache__
 venv
-dist</code></pre>
+dist
+```
+
+<div dir="rtl" align="right">
+
 
 مزایا:
 
-<span dir="ltr">Build Context</span> کوچک‌تر
+- Build Context کوچک‌تر
+- Build سریع‌تر
+- کاهش ورود فایل غیرضروری یا Secret به Image
 
-<span dir="ltr">Build</span> سریع‌تر
+---
 
-کاهش ورود فایل غیرضروری یا <span dir="ltr">Secret</span> به <span dir="ltr">Image</span>
+<a id="cache"></a>
+## 5. Layer و Build Cache
 
-<a id="cache" name="cache"></a>
+ترتیب Dockerfile روی Cache اثر دارد.
 
-5. <span dir="ltr">Layer</span> و <span dir="ltr">Build Cache</span>
+برای Node:
 
-ترتیب <span dir="ltr">Dockerfile</span> روی <span dir="ltr">Cache</span> اثر دارد.
+</div>
 
-برای <span dir="ltr">Node:</span>
-
+```dockerfile
 FROM node:22
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+```
 
-اگر فقط <span dir="ltr">Source Code</span> تغییر کند ولی فایل‌های <span dir="ltr">Package</span> تغییر نکنند، <span dir="ltr">Docker</span> ممکن است <span dir="ltr">Layer</span> نصب <span dir="ltr">Dependency</span>ها را <span dir="ltr">reuse</span> کند.
+<div dir="rtl" align="right">
 
-برای <span dir="ltr">Python:</span>
 
+اگر فقط Source Code تغییر کند ولی فایل‌های Package تغییر نکنند، Docker ممکن است Layer نصب Dependencyها را reuse کند.
+
+برای Python:
+
+</div>
+
+```dockerfile
 FROM python:3.13-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
+```
+
+<div dir="rtl" align="right">
+
 
 اصل ذهنی:
 
-<pre dir="ltr"><code>Dependency manifest
-        │
-        ▼
-Install dependencies
-        │
-        ▼
-Source code</code></pre>
+</div>
 
-تا تغییر کوچک در <span dir="ltr">Source</span> باعث نصب دوباره همه <span dir="ltr">Dependency</span>ها نشود.
+```text
+Dependency manifest
+→ قبل از Source Code
+```
 
-<a id="cmd-entrypoint" name="cmd-entrypoint"></a>
+<div dir="rtl" align="right">
 
-6. <code dir="ltr">CMD</code> و <code dir="ltr">ENTRYPOINT</code>
 
-<span dir="ltr">CMD</span>
+تا تغییر کوچک در Source باعث نصب دوباره همه Dependencyها نشود.
 
+---
+
+<a id="cmd-entrypoint"></a>
+## 6. `CMD` و `ENTRYPOINT`
+
+### CMD
+
+</div>
+
+```dockerfile
 CMD ["node", "app.js"]
+```
 
-<span dir="ltr">Command</span> پیش‌فرض است و با <span dir="ltr">Command</span> انتهای <code dir="ltr">docker run</code> راحت <span dir="ltr">Override</span> می‌شود:
+<div dir="rtl" align="right">
 
+
+Command پیش‌فرض است و با Command انتهای `docker run` راحت Override می‌شود:
+
+</div>
+
+```bash
 docker run myapp bash
+```
 
-<span dir="ltr">ENTRYPOINT</span>
+<div dir="rtl" align="right">
 
+
+### ENTRYPOINT
+
+</div>
+
+```dockerfile
 ENTRYPOINT ["python", "app.py"]
+```
 
-<span dir="ltr">Executable</span> اصلی را ثابت‌تر می‌کند.
+<div dir="rtl" align="right">
+
+
+Executable اصلی را ثابت‌تر می‌کند.
 
 ترکیب:
 
+</div>
+
+```dockerfile
 ENTRYPOINT ["python", "app.py"]
 CMD ["--port", "3000"]
+```
 
-مدل <span dir="ltr">Runtime:</span>
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>python app.py --port 3000</code></pre>
+
+مدل Runtime:
+
+</div>
+
+```text
+python app.py --port 3000
+```
+
+<div dir="rtl" align="right">
+
 
 برای شروع:
 
-<table dir="rtl">
-  <thead><tr><th>دستور</th><th>مدل ذهنی</th></tr></thead>
-  <tbody>
-    <tr><td><code dir="ltr">CMD</code></td><td>دستور یا آرگومان پیش‌فرض که معمولاً در زمان اجرا قابل <span dir="ltr">Override</span> است.</td></tr>
-    <tr><td><code dir="ltr">ENTRYPOINT</code></td><td>هستهٔ فرمان اجرایی <span dir="ltr">Container</span>.</td></tr>
-    <tr><td><code dir="ltr">ENTRYPOINT + CMD</code></td><td><span dir="ltr">Executable</span> ثابت به‌همراه آرگومان‌های پیش‌فرض.</td></tr>
-  </tbody>
-</table>
+</div>
 
-<a id="copy-bind" name="copy-bind"></a>
+```text
+CMD
+→ پیش‌فرض قابل Override
 
-7. <code dir="ltr">COPY</code> و <span dir="ltr">Bind Mount</span>
+ENTRYPOINT
+→ هسته Command
 
-<span dir="ltr">COPY</span>
+ENTRYPOINT + CMD
+→ Executable ثابت + default arguments
+```
 
+<div dir="rtl" align="right">
+
+
+---
+
+<a id="copy-bind"></a>
+## 7. `COPY` و Bind Mount
+
+### COPY
+
+</div>
+
+```dockerfile
 COPY app.js .
+```
 
-<pre dir="ltr"><code>Host app.js
+<div dir="rtl" align="right">
+
+</div>
+
+```text
+Host app.js
    ↓ docker build
-Image /app/app.js</code></pre>
+Image /app/app.js
+```
 
-بعد از <span dir="ltr">Build</span>، تغییر <span dir="ltr">Host</span> وارد <span dir="ltr">Image</span> قبلی نمی‌شود.
+<div dir="rtl" align="right">
 
-<span dir="ltr">Bind Mount</span>
 
+بعد از Build، تغییر Host وارد Image قبلی نمی‌شود.
+
+### Bind Mount
+
+</div>
+
+```bash
 docker run \
   -v "$PWD/app.js":/app/app.js \
   myapp
+```
 
-<pre dir="ltr"><code>Host app.js
+<div dir="rtl" align="right">
+
+</div>
+
+```text
+Host app.js
      ⇅
-Container /app/app.js</code></pre>
+Container /app/app.js
+```
+
+<div dir="rtl" align="right">
+
 
 پس:
 
-<table dir="rtl">
-  <thead><tr><th>روش</th><th>زمان و رفتار</th></tr></thead>
-  <tbody>
-    <tr><td><code dir="ltr">COPY</code></td><td>از فایل در زمان <span dir="ltr">Build</span> یک نسخه داخل <span dir="ltr">Image</span> قرار می‌دهد.</td></tr>
-    <tr><td><code dir="ltr">Bind Mount</code></td><td>در زمان <span dir="ltr">Runtime</span> فایل یا پوشهٔ واقعی <span dir="ltr">Host</span> را داخل <span dir="ltr">Container</span> متصل می‌کند.</td></tr>
-  </tbody>
-</table>
+</div>
 
-اگر کل <code dir="ltr">/app</code> را <span dir="ltr">Mount</span> کنی:
+```text
+COPY = Snapshot در Build time
+Bind Mount = اتصال Runtime به فایل Host
+```
 
+<div dir="rtl" align="right">
+
+
+اگر کل `/app` را Mount کنی:
+
+</div>
+
+```bash
 -v "$PWD":/app
+```
 
-محتویات قبلی <code dir="ltr">/app</code> داخل <span dir="ltr">Image</span> ممکن است پشت <span dir="ltr">Mount</span> پنهان شوند. برای همین مسیر <span dir="ltr">Mount</span> باید آگاهانه انتخاب شود.
+<div dir="rtl" align="right">
 
-<a id="node" name="node"></a>
 
-8. سناریوی <span dir="ltr">Node.js:</span> از <span dir="ltr">Dockerfile</span> تا <span dir="ltr">Image</span>
+محتویات قبلی `/app` داخل Image ممکن است پشت Mount پنهان شوند. برای همین مسیر Mount باید آگاهانه انتخاب شود.
+
+---
+
+<a id="node"></a>
+## 8. سناریوی Node.js: از Dockerfile تا Image
 
 ساختار:
 
-<pre dir="ltr"><code>node-app/
+</div>
+
+```text
+node-app/
 ├── app.js
 ├── package.json
 ├── package-lock.json
 ├── Dockerfile
-└── .dockerignore</code></pre>
+└── .dockerignore
+```
 
-<code dir="ltr">app.js</code>:
+<div dir="rtl" align="right">
 
+
+`app.js`:
+
+</div>
+
+```javascript
 const express = require("express");
 const app = express();
 
@@ -411,9 +726,16 @@ app.get("/", (req, res) => {
 app.listen(3000, "0.0.0.0", () => {
   console.log("Listening on port 3000");
 });
+```
 
-<code dir="ltr">Dockerfile</code>:
+<div dir="rtl" align="right">
 
+
+`Dockerfile`:
+
+</div>
+
+```dockerfile
 FROM node:22
 
 WORKDIR /app
@@ -426,53 +748,102 @@ COPY . .
 EXPOSE 3000
 
 CMD ["node", "app.js"]
+```
 
-<code dir="ltr">.dockerignore</code>:
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>node_modules
+
+`.dockerignore`:
+
+</div>
+
+```text
+node_modules
 npm-debug.log
 .git
-.env</code></pre>
+.env
+```
 
-<span dir="ltr">Build:</span>
+<div dir="rtl" align="right">
 
+
+Build:
+
+</div>
+
+```bash
 docker build -t node-app:1.0.0 .
+```
 
-<span dir="ltr">Run:</span>
+<div dir="rtl" align="right">
 
+
+Run:
+
+</div>
+
+```bash
 docker run \
   --name node-app \
   -p 2000:3000 \
   node-app:1.0.0
+```
 
-<span dir="ltr">Test:</span>
+<div dir="rtl" align="right">
 
+
+Test:
+
+</div>
+
+```bash
 curl http://localhost:2000
+```
 
-<pre dir="ltr"><code>curl
+<div dir="rtl" align="right">
+
+</div>
+
+```text
+curl
  ↓
 Host :2000
  ↓
 Container :3000
  ↓
-node app.js</code></pre>
+node app.js
+```
 
-برای دیدن تفاوت <span dir="ltr">COPY</span> و <span dir="ltr">Bind Mount</span>، بعد از <span dir="ltr">Build</span> متن <span dir="ltr">Response</span> را روی <span dir="ltr">Host</span> تغییر بده. بدون <span dir="ltr">Build</span> مجدد <span dir="ltr">Image</span> همان نسخه قدیمی را دارد؛ با <span dir="ltr">Mount</span> کردن <code dir="ltr">app.js</code> نسخه فعلی <span dir="ltr">Host</span> دیده می‌شود.
+<div dir="rtl" align="right">
 
-<a id="flask" name="flask"></a>
 
-9. سناریوی <span dir="ltr">Flask: Application</span> داخل <span dir="ltr">Container</span>
+برای دیدن تفاوت COPY و Bind Mount، بعد از Build متن Response را روی Host تغییر بده. بدون Build مجدد Image همان نسخه قدیمی را دارد؛ با Mount کردن `app.js` نسخه فعلی Host دیده می‌شود.
+
+---
+
+<a id="flask"></a>
+## 9. سناریوی Flask: Application داخل Container
 
 ساختار:
 
-<pre dir="ltr"><code>flask-app/
+</div>
+
+```text
+flask-app/
 ├── app.py
 ├── requirements.txt
 ├── Dockerfile
-└── .dockerignore</code></pre>
+└── .dockerignore
+```
 
-<code dir="ltr">app.py</code>:
+<div dir="rtl" align="right">
 
+
+`app.py`:
+
+</div>
+
+```python
 from flask import Flask
 
 app = Flask(__name__)
@@ -483,13 +854,27 @@ def hello():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4000)
+```
 
-<code dir="ltr">requirements.txt</code>:
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>Flask</code></pre>
 
-<code dir="ltr">Dockerfile</code>:
+`requirements.txt`:
 
+</div>
+
+```text
+Flask
+```
+
+<div dir="rtl" align="right">
+
+
+`Dockerfile`:
+
+</div>
+
+```dockerfile
 FROM python:3.13-slim
 
 WORKDIR /app
@@ -502,78 +887,138 @@ COPY app.py .
 EXPOSE 4000
 
 CMD ["python", "app.py"]
+```
 
-<span dir="ltr">Build:</span>
+<div dir="rtl" align="right">
 
+
+Build:
+
+</div>
+
+```bash
 docker build -t flask-app:1.0.0 .
+```
 
-<span dir="ltr">Run:</span>
+<div dir="rtl" align="right">
 
+
+Run:
+
+</div>
+
+```bash
 docker run \
   --name flask-app \
   -p 4000:4000 \
   flask-app:1.0.0
+```
+
+<div dir="rtl" align="right">
+
 
 دو نکته:
 
-<pre dir="ltr"><code>Application
-    │
-    ▼
-0.0.0.0:4000 inside container
-    │
-    ▼
-Docker port publishing
-    │
-    ▼
-Host:4000</code></pre>
+</div>
 
-<a id="compose" name="compose"></a>
+```text
+Application داخل Container
+→ روی 0.0.0.0 گوش می‌دهد
 
-10. <span dir="ltr">Docker Compose</span> چیست؟
+Port Mapping
+→ Host 4000 را به Container 4000 وصل می‌کند
+```
 
-در پروژه واقعی معمولاً فقط یک <span dir="ltr">Container</span> نداریم:
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>Application
+
+---
+
+<a id="compose"></a>
+## 10. Docker Compose چیست؟
+
+در پروژه واقعی معمولاً فقط یک Container نداریم:
+
+</div>
+
+```text
+Application
 ├── Nginx
 ├── Backend
 ├── PostgreSQL
-└── Redis</code></pre>
+└── Redis
+```
 
-بدون <span dir="ltr">Compose</span> باید <span dir="ltr">Network</span>، <span dir="ltr">Volume</span> و <code dir="ltr">docker run</code>های مختلف را جدا مدیریت کنیم.
+<div dir="rtl" align="right">
 
-<span dir="ltr">Compose</span> معماری <span dir="ltr">Runtime</span> پروژه را در <span dir="ltr">YAML</span> تعریف می‌کند:
 
+بدون Compose باید Network، Volume و `docker run`های مختلف را جدا مدیریت کنیم.
+
+Compose معماری Runtime پروژه را در YAML تعریف می‌کند:
+
+</div>
+
+```yaml
 services:
   web:
     image: nginx:alpine
     ports:
       - "8080:80"
+```
+
+<div dir="rtl" align="right">
+
 
 اجرا:
 
+</div>
+
+```bash
 docker compose up -d
+```
+
+<div dir="rtl" align="right">
+
 
 پس:
 
-<pre dir="ltr"><code>Dockerfile → Image definition
-compose.yaml → Runtime topology</code></pre>
+</div>
 
-<span dir="ltr">Compose</span> جایگزین <span dir="ltr">Docker</span> نیست؛ روی همان <span dir="ltr">Docker Engine</span> کار می‌کند.
+```text
+Dockerfile → Image definition
+compose.yaml → Runtime topology
+```
 
-<a id="compose-structure" name="compose-structure"></a>
+<div dir="rtl" align="right">
 
-11. ساختار <code dir="ltr">compose.yaml</code>
+
+Compose جایگزین Docker نیست؛ روی همان Docker Engine کار می‌کند.
+
+---
+
+<a id="compose-structure"></a>
+## 11. ساختار `compose.yaml`
 
 سه بخش پرتکرار:
 
+</div>
+
+```yaml
 services:
 
 volumes:
 
 networks:
+```
+
+<div dir="rtl" align="right">
+
 
 مثال:
 
+</div>
+
+```yaml
 services:
   backend:
     image: my-backend:1.0.0
@@ -586,84 +1031,163 @@ volumes:
 
 networks:
   app-net:
+```
 
-<code dir="ltr">Service</code> یعنی یک بخش از <span dir="ltr">Application</span> که <span dir="ltr">Compose</span> آن را مدیریت می‌کند.
+<div dir="rtl" align="right">
 
-<a id="service" name="service"></a>
 
-12. <span dir="ltr">Service</span> و تنظیمات اصلی آن
+`Service` یعنی یک بخش از Application که Compose آن را مدیریت می‌کند.
 
-<code dir="ltr">image</code>
+---
 
+<a id="service"></a>
+## 12. Service و تنظیمات اصلی آن
+
+### `image`
+
+</div>
+
+```yaml
 services:
   nginx:
     image: nginx:alpine
+```
 
-<code dir="ltr">build</code>
+<div dir="rtl" align="right">
 
+
+### `build`
+
+</div>
+
+```yaml
 services:
   backend:
     build: ./backend
+```
+
+<div dir="rtl" align="right">
+
 
 فرم کامل‌تر:
 
+</div>
+
+```yaml
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+```
 
-<code dir="ltr">ports</code>
+<div dir="rtl" align="right">
 
+
+### `ports`
+
+</div>
+
+```yaml
 ports:
   - "8080:80"
+```
 
-یعنی <span dir="ltr">Host</span> <code dir="ltr">8080</code> به <span dir="ltr">Container</span> <code dir="ltr">80</code>.
+<div dir="rtl" align="right">
 
-<code dir="ltr">environment</code>
 
+یعنی Host `8080` به Container `80`.
+
+### `environment`
+
+</div>
+
+```yaml
 environment:
   APP_ENV: development
   DB_HOST: database
+```
 
-<code dir="ltr">container_name</code>
+<div dir="rtl" align="right">
 
-<span dir="ltr">Compose</span> امکان نام ثابت دارد:
 
+### `container_name`
+
+Compose امکان نام ثابت دارد:
+
+</div>
+
+```yaml
 container_name: backend
+```
 
-اما معمولاً بهتر است بی‌دلیل به نام ثابت وابسته نشویم؛ خود <span dir="ltr">Compose Naming</span> و <span dir="ltr">Service Discovery</span> را مدیریت می‌کند.
+<div dir="rtl" align="right">
 
-<a id="compose-network" name="compose-network"></a>
 
-13. <span dir="ltr">Network</span> در <span dir="ltr">Compose</span>
+اما معمولاً بهتر است بی‌دلیل به نام ثابت وابسته نشویم؛ خود Compose Naming و Service Discovery را مدیریت می‌کند.
 
-<span dir="ltr">Compose</span> معمولاً برای <span dir="ltr">Project</span> یک <span dir="ltr">Network</span> پیش‌فرض می‌سازد.
+---
 
-<pre dir="ltr"><code>backend
+<a id="compose-network"></a>
+## 13. Network در Compose
+
+Compose معمولاً برای Project یک Network پیش‌فرض می‌سازد.
+
+</div>
+
+```text
+backend
  database
  nginx
    │
-   └── project_default</code></pre>
+   └── project_default
+```
 
-<span dir="ltr">Service</span>ها با نام <span dir="ltr">Service</span> همدیگر را پیدا می‌کنند.
+<div dir="rtl" align="right">
 
-اگر <span dir="ltr">Service</span> دیتابیس <code dir="ltr">database</code> باشد:
 
-<pre dir="ltr"><code>database:5432</code></pre>
+Serviceها با نام Service همدیگر را پیدا می‌کنند.
 
-اشتباه رایج داخل <span dir="ltr">Backend:</span>
+اگر Service دیتابیس `database` باشد:
 
-<pre dir="ltr"><code>DB_HOST=localhost</code></pre>
+</div>
 
-<code dir="ltr">localhost</code> داخل <span dir="ltr">Backend</span> یعنی خود <span dir="ltr">Backend Container</span>، نه <span dir="ltr">Database.</span>
+```text
+database:5432
+```
+
+<div dir="rtl" align="right">
+
+
+اشتباه رایج داخل Backend:
+
+</div>
+
+```text
+DB_HOST=localhost
+```
+
+<div dir="rtl" align="right">
+
+
+`localhost` داخل Backend یعنی خود Backend Container، نه Database.
 
 درست:
 
-<pre dir="ltr"><code>DB_HOST=database</code></pre>
+</div>
 
-<span dir="ltr">Network</span> اختصاصی:
+```text
+DB_HOST=database
+```
 
+<div dir="rtl" align="right">
+
+
+Network اختصاصی:
+
+</div>
+
+```yaml
 services:
   backend:
     networks:
@@ -675,13 +1199,21 @@ services:
 
 networks:
   app-net:
+```
 
-<a id="compose-storage" name="compose-storage"></a>
+<div dir="rtl" align="right">
 
-14. <span dir="ltr">Volume</span> و <span dir="ltr">Bind Mount</span> در <span dir="ltr">Compose</span>
 
-<span dir="ltr">Named Volume:</span>
+---
 
+<a id="compose-storage"></a>
+## 14. Volume و Bind Mount در Compose
+
+Named Volume:
+
+</div>
+
+```yaml
 services:
   database:
     image: postgres:17
@@ -690,84 +1222,132 @@ services:
 
 volumes:
   db-data:
+```
 
-برای <span dir="ltr">Database Data</span> مناسب است.
+<div dir="rtl" align="right">
 
-<span dir="ltr">Bind Mount</span> در <span dir="ltr">Development:</span>
 
+برای Database Data مناسب است.
+
+Bind Mount در Development:
+
+</div>
+
+```yaml
 services:
   backend:
     build: ./backend
     volumes:
       - ./backend:/app
+```
+
+<div dir="rtl" align="right">
+
 
 مدل پیشنهادی برای شروع:
 
-<table dir="rtl">
-  <thead><tr><th>نوع داده</th><th>انتخاب معمول</th></tr></thead>
-  <tbody>
-    <tr><td><span dir="ltr">Source Code</span> در محیط توسعه</td><td><code dir="ltr">Bind Mount</code></td></tr>
-    <tr><td>دادهٔ پایگاه‌داده</td><td><code dir="ltr">Named Volume</code></td></tr>
-  </tbody>
-</table>
+</div>
 
-<a id="compose-env" name="compose-env"></a>
+```text
+Source Code در Development → Bind Mount
+Database Data → Named Volume
+```
 
-15. <code dir="ltr">.env</code>، <code dir="ltr">environment</code> و <code dir="ltr">env_file</code>
+<div dir="rtl" align="right">
+
+
+---
+
+<a id="compose-env"></a>
+## 15. `.env`، `environment` و `env_file`
 
 این سه مفهوم را قاطی نکن.
 
-<code dir="ltr">environment</code>
+### `environment`
 
+</div>
+
+```yaml
 services:
   backend:
     environment:
       APP_ENV: development
       DB_HOST: database
+```
 
-<span dir="ltr">Interpolation</span> با <code dir="ltr">.env</code>
+<div dir="rtl" align="right">
 
-<code dir="ltr">.env</code>:
 
+### Interpolation با `.env`
+
+`.env`:
+
+</div>
+
+```ini
 APP_PORT=3000
 POSTGRES_DB=appdb
 POSTGRES_USER=appuser
 POSTGRES_PASSWORD=change-me
+```
 
-<span dir="ltr">Compose:</span>
+<div dir="rtl" align="right">
 
+
+Compose:
+
+</div>
+
+```yaml
 ports:
   - "${APP_PORT}:3000"
+```
 
-<span dir="ltr">Compose</span> مقدار <code dir="ltr">${APP_PORT}</code> را هنگام پردازش فایل جایگزین می‌کند.
+<div dir="rtl" align="right">
 
-<code dir="ltr">env_file</code>
 
+Compose مقدار `${APP_PORT}` را هنگام پردازش فایل جایگزین می‌کند.
+
+### `env_file`
+
+</div>
+
+```yaml
 services:
   backend:
     env_file:
       - .env
+```
 
-<span dir="ltr">Variable</span>های فایل وارد <span dir="ltr">Environment Container</span> می‌شوند.
+<div dir="rtl" align="right">
 
-برای <span dir="ltr">Repository:</span>
 
-<table dir="rtl">
-  <thead><tr><th>فایل</th><th>نقش</th><th>وضعیت در Git</th></tr></thead>
-  <tbody>
-    <tr><td><code dir="ltr">.env</code></td><td>مقادیر واقعی محیط، از جمله مقادیری که ممکن است حساس باشند.</td><td>معمولاً در <code dir="ltr">.gitignore</code></td></tr>
-    <tr><td><code dir="ltr">.env.example</code></td><td>نام متغیرها و مقدارهای نمونهٔ غیرحساس برای راه‌اندازی پروژه.</td><td>قابل <span dir="ltr">Commit</span></td></tr>
-  </tbody>
-</table>
+Variableهای فایل وارد Environment Container می‌شوند.
 
-<a id="health" name="health"></a>
+برای Repository:
 
-16. <code dir="ltr">depends_on</code> و <code dir="ltr">healthcheck</code>
+</div>
 
-صرف <span dir="ltr">Running</span> شدن <span dir="ltr">Container</span> همیشه به معنی <span dir="ltr">Ready</span> بودن <span dir="ltr">Service</span> نیست.
+```text
+.env → مقدار واقعی → در .gitignore
+.env.example → نام Variableها و مقدار نمونه → قابل Commit
+```
 
-<span dir="ltr">Database:</span>
+<div dir="rtl" align="right">
 
+
+---
+
+<a id="health"></a>
+## 16. `depends_on` و `healthcheck`
+
+صرف Running شدن Container همیشه به معنی Ready بودن Service نیست.
+
+Database:
+
+</div>
+
+```yaml
 services:
   database:
     image: postgres:17
@@ -780,54 +1360,104 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+```
 
-<span dir="ltr">Backend:</span>
+<div dir="rtl" align="right">
 
+
+Backend:
+
+</div>
+
+```yaml
 services:
   backend:
     depends_on:
       database:
         condition: service_healthy
+```
 
-<pre dir="ltr"><code>database started
+<div dir="rtl" align="right">
+
+</div>
+
+```text
+database started
       ↓
 healthcheck passes
       ↓
 database healthy
       ↓
-backend starts</code></pre>
+backend starts
+```
 
-<span dir="ltr">Application</span> همچنان باید در برابر قطع موقت <span dir="ltr">Dependency</span>ها رفتار مناسبی داشته باشد؛ <span dir="ltr">Healthcheck</span> جای <span dir="ltr">Retry Logic</span> برنامه را کامل نمی‌گیرد.
+<div dir="rtl" align="right">
 
-<a id="runtime-options" name="runtime-options"></a>
 
-17. <code dir="ltr">restart</code>، <code dir="ltr">command</code> و <code dir="ltr">entrypoint</code>
+Application همچنان باید در برابر قطع موقت Dependencyها رفتار مناسبی داشته باشد؛ Healthcheck جای Retry Logic برنامه را کامل نمی‌گیرد.
 
-<span dir="ltr">Restart Policy:</span>
+---
 
+<a id="runtime-options"></a>
+## 17. `restart`، `command` و `entrypoint`
+
+Restart Policy:
+
+</div>
+
+```yaml
 restart: unless-stopped
+```
+
+<div dir="rtl" align="right">
+
 
 یا:
 
+</div>
+
+```yaml
 restart: on-failure
+```
 
-<span dir="ltr">Override</span> کردن <span dir="ltr">CMD:</span>
+<div dir="rtl" align="right">
 
+
+Override کردن CMD:
+
+</div>
+
+```yaml
 command: ["python", "app.py"]
+```
 
-<span dir="ltr">Override</span> کردن <span dir="ltr">ENTRYPOINT:</span>
+<div dir="rtl" align="right">
 
+
+Override کردن ENTRYPOINT:
+
+</div>
+
+```yaml
 entrypoint: ["sh", "/app/start.sh"]
+```
 
-اگر <span dir="ltr">Dockerfile</span> رفتار درست دارد، بی‌دلیل <code dir="ltr">command</code> و <code dir="ltr">entrypoint</code> را در <span dir="ltr">Compose</span> تغییر نده.
+<div dir="rtl" align="right">
 
-<a id="real-project" name="real-project"></a>
 
-18. سناریوی پروژه واقعی: <span dir="ltr">Backend</span> + <span dir="ltr">PostgreSQL</span> + <span dir="ltr">Nginx</span>
+اگر Dockerfile رفتار درست دارد، بی‌دلیل `command` و `entrypoint` را در Compose تغییر نده.
+
+---
+
+<a id="real-project"></a>
+## 18. سناریوی پروژه واقعی: Backend + PostgreSQL + Nginx
 
 ساختار:
 
-<pre dir="ltr"><code>project/
+</div>
+
+```text
+project/
 ├── backend/
 │   ├── app.py
 │   ├── requirements.txt
@@ -837,12 +1467,19 @@ entrypoint: ["sh", "/app/start.sh"]
 ├── compose.yaml
 ├── .env
 ├── .env.example
-└── .gitignore</code></pre>
+└── .gitignore
+```
 
-<span dir="ltr">Backend</span>
+<div dir="rtl" align="right">
 
-<code dir="ltr">backend/app.py</code>:
 
+### Backend
+
+`backend/app.py`:
+
+</div>
+
+```python
 from flask import Flask
 import os
 
@@ -859,14 +1496,28 @@ def health():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4000)
+```
 
-<code dir="ltr">backend/requirements.txt</code>:
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>Flask
-gunicorn</code></pre>
 
-<code dir="ltr">backend/Dockerfile</code>:
+`backend/requirements.txt`:
 
+</div>
+
+```text
+Flask
+gunicorn
+```
+
+<div dir="rtl" align="right">
+
+
+`backend/Dockerfile`:
+
+</div>
+
+```dockerfile
 FROM python:3.13-slim
 
 WORKDIR /app
@@ -879,11 +1530,18 @@ COPY . .
 EXPOSE 4000
 
 CMD ["gunicorn", "--bind", "0.0.0.0:4000", "app:app"]
+```
 
-<span dir="ltr">Nginx</span>
+<div dir="rtl" align="right">
 
-<code dir="ltr">nginx/default.conf</code>:
 
+### Nginx
+
+`nginx/default.conf`:
+
+</div>
+
+```nginx
 server {
     listen 80;
 
@@ -893,31 +1551,59 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 }
+```
 
-<code dir="ltr">backend</code> نام <span dir="ltr">Service</span> است؛ نیازی به <span dir="ltr">IP</span> ثابت نداریم.
+<div dir="rtl" align="right">
 
-<code dir="ltr">.env</code>
 
+`backend` نام Service است؛ نیازی به IP ثابت نداریم.
+
+### `.env`
+
+</div>
+
+```ini
 APP_PORT=8080
 POSTGRES_DB=appdb
 POSTGRES_USER=appuser
 POSTGRES_PASSWORD=change-me
+```
 
-<code dir="ltr">.env.example</code>
+<div dir="rtl" align="right">
 
+
+### `.env.example`
+
+</div>
+
+```ini
 APP_PORT=8080
 POSTGRES_DB=appdb
 POSTGRES_USER=appuser
 POSTGRES_PASSWORD=replace-me
+```
 
-<code dir="ltr">.gitignore</code>
+<div dir="rtl" align="right">
 
-<pre dir="ltr"><code>.env
+
+### `.gitignore`
+
+</div>
+
+```text
+.env
 __pycache__/
-*.pyc</code></pre>
+*.pyc
+```
 
-<code dir="ltr">compose.yaml</code>
+<div dir="rtl" align="right">
 
+
+### `compose.yaml`
+
+</div>
+
+```yaml
 services:
   backend:
     build:
@@ -968,10 +1654,17 @@ volumes:
 
 networks:
   app-net:
+```
+
+<div dir="rtl" align="right">
+
 
 معماری:
 
-<pre dir="ltr"><code>Browser
+</div>
+
+```text
+Browser
    ↓
 Host :8080
    ↓
@@ -981,92 +1674,196 @@ backend:4000
    ↓
 database:5432
    ↓
-db-data volume</code></pre>
+db-data volume
+```
 
-<span dir="ltr">Validate:</span>
+<div dir="rtl" align="right">
 
+
+Validate:
+
+</div>
+
+```bash
 docker compose config
+```
 
-<span dir="ltr">Run:</span>
+<div dir="rtl" align="right">
 
+
+Run:
+
+</div>
+
+```bash
 docker compose up -d --build
+```
+
+<div dir="rtl" align="right">
+
 
 بررسی:
 
+</div>
+
+```bash
 docker compose ps
 docker compose logs -f
 curl http://localhost:8080
+```
 
-<a id="workflow" name="workflow"></a>
+<div dir="rtl" align="right">
 
-19. چرخه کار روزانه با <span dir="ltr">Docker Compose</span>
 
-<span dir="ltr">Validate:</span>
+---
 
+<a id="workflow"></a>
+## 19. چرخه کار روزانه با Docker Compose
+
+Validate:
+
+</div>
+
+```bash
 docker compose config
+```
 
-<span dir="ltr">Build:</span>
+<div dir="rtl" align="right">
 
+
+Build:
+
+</div>
+
+```bash
 docker compose build
+```
 
-<span dir="ltr">Build</span> بدون <span dir="ltr">Cache</span>، فقط در صورت نیاز:
+<div dir="rtl" align="right">
 
+
+Build بدون Cache، فقط در صورت نیاز:
+
+</div>
+
+```bash
 docker compose build --no-cache
+```
 
-<span dir="ltr">Up:</span>
+<div dir="rtl" align="right">
 
+
+Up:
+
+</div>
+
+```bash
 docker compose up
 docker compose up -d
 docker compose up -d --build
+```
 
-<span dir="ltr">Status:</span>
+<div dir="rtl" align="right">
 
+
+Status:
+
+</div>
+
+```bash
 docker compose ps
+```
 
-<span dir="ltr">Logs:</span>
+<div dir="rtl" align="right">
 
+
+Logs:
+
+</div>
+
+```bash
 docker compose logs -f
 docker compose logs -f backend
+```
 
-<span dir="ltr">Exec:</span>
+<div dir="rtl" align="right">
 
+
+Exec:
+
+</div>
+
+```bash
 docker compose exec backend sh
+```
 
-<span dir="ltr">Restart:</span>
+<div dir="rtl" align="right">
 
+
+Restart:
+
+</div>
+
+```bash
 docker compose restart backend
+```
 
-<span dir="ltr">Stop/Start:</span>
+<div dir="rtl" align="right">
 
+
+Stop/Start:
+
+</div>
+
+```bash
 docker compose stop
 docker compose start
+```
 
-<span dir="ltr">Down:</span>
+<div dir="rtl" align="right">
 
+
+Down:
+
+</div>
+
+```bash
 docker compose down
+```
 
-<span dir="ltr">Down</span> همراه <span dir="ltr">Volume</span>ها:
+<div dir="rtl" align="right">
 
+
+Down همراه Volumeها:
+
+</div>
+
+```bash
 docker compose down -v
+```
 
-<code dir="ltr">-v</code> می‌تواند <span dir="ltr">Data</span> مربوط به <span dir="ltr">Named Volume</span>های پروژه را حذف کند؛ برای <span dir="ltr">Database</span> بدون آگاهی استفاده نکن.
+<div dir="rtl" align="right">
 
-<a id="dev-prod" name="dev-prod"></a>
 
-20. <span dir="ltr">Development</span> در برابر <span dir="ltr">Production</span>
+`-v` می‌تواند Data مربوط به Named Volumeهای پروژه را حذف کند؛ برای Database بدون آگاهی استفاده نکن.
 
-<span dir="ltr">Development</span> معمولاً به این‌ها نیاز دارد:
+---
 
-<span dir="ltr">Source Code</span> با <span dir="ltr">Bind Mount</span>
+<a id="dev-prod"></a>
+## 20. Development در برابر Production
 
-<span dir="ltr">Auto Reload</span>
+Development معمولاً به این‌ها نیاز دارد:
 
-<span dir="ltr">Port</span>های <span dir="ltr">Debug</span>
-
-<span dir="ltr">Log</span> بیشتر
+- Source Code با Bind Mount
+- Auto Reload
+- Portهای Debug
+- Log بیشتر
 
 نمونه:
 
+</div>
+
+```yaml
 services:
   backend:
     build: ./backend
@@ -1080,147 +1877,261 @@ services:
       - --host=0.0.0.0
       - --port=4000
       - --debug
+```
 
-<span dir="ltr">Production</span> معمولاً می‌خواهد:
+<div dir="rtl" align="right">
 
-<span dir="ltr">Source</span> داخل <span dir="ltr">Image</span>
 
-<span dir="ltr">Build</span> قابل‌تکرار
+Production معمولاً می‌خواهد:
 
-<span dir="ltr">Runtime</span> کوچک‌تر
-
-<span dir="ltr">Restart Policy</span> مشخص
-
-<span dir="ltr">Secret Management</span> مناسب
-
-<span dir="ltr">Healthcheck</span>
-
-<span dir="ltr">Port</span>های داخلی غیرضروری <span dir="ltr">Publish</span> نشوند
+- Source داخل Image
+- Build قابل‌تکرار
+- Runtime کوچک‌تر
+- Restart Policy مشخص
+- Secret Management مناسب
+- Healthcheck
+- Portهای داخلی غیرضروری Publish نشوند
 
 اصل:
 
-<pre dir="ltr"><code>Development convenience
+</div>
+
+```text
+Development convenience
 ≠
-Production configuration</code></pre>
+Production configuration
+```
 
-<a id="debug" name="debug"></a>
+<div dir="rtl" align="right">
 
-21. <span dir="ltr">Debug</span> و <span dir="ltr">Troubleshooting</span>
+
+---
+
+<a id="debug"></a>
+## 21. Debug و Troubleshooting
 
 ترتیب پیشنهادی:
 
-1. <span dir="ltr">Configuration</span>
+### 1. Configuration
 
+</div>
+
+```bash
 docker compose config
+```
 
-2. وضعیت <span dir="ltr">Service</span>ها
+<div dir="rtl" align="right">
 
+
+### 2. وضعیت Serviceها
+
+</div>
+
+```bash
 docker compose ps
+```
 
-3. <span dir="ltr">Log</span>
+<div dir="rtl" align="right">
 
+
+### 3. Log
+
+</div>
+
+```bash
 docker compose logs backend
 docker compose logs database
+```
 
-4. داخل <span dir="ltr">Container</span>
+<div dir="rtl" align="right">
 
+
+### 4. داخل Container
+
+</div>
+
+```bash
 docker compose exec backend sh
 env
+```
 
-5. <span dir="ltr">DNS</span> داخلی
+<div dir="rtl" align="right">
 
-اگر ابزار مربوطه در <span dir="ltr">Image</span> وجود داشته باشد:
 
+### 5. DNS داخلی
+
+اگر ابزار مربوطه در Image وجود داشته باشد:
+
+</div>
+
+```bash
 getent hosts database
+```
 
-6. <span dir="ltr">Volume</span>
+<div dir="rtl" align="right">
 
+
+### 6. Volume
+
+</div>
+
+```bash
 docker volume ls
 docker volume inspect PROJECT_db-data
+```
 
-7. <span dir="ltr">Build</span>
+<div dir="rtl" align="right">
 
+
+### 7. Build
+
+</div>
+
+```bash
 docker compose build --progress=plain backend
+```
 
-سؤال‌های <span dir="ltr">Debug:</span>
+<div dir="rtl" align="right">
 
-<ol dir="rtl">
-  <li>آیا <span dir="ltr">Service</span> ساخته و اجرا شده است؟</li>
-  <li>آیا <span dir="ltr">Process</span> اصلی هنوز در حال اجراست؟</li>
-  <li>آیا <span dir="ltr">Application</span> روی <span dir="ltr">Port</span> درست گوش می‌دهد؟</li>
-  <li>آیا همان <span dir="ltr">Port</span> درست روی <span dir="ltr">Host</span> منتشر شده است؟</li>
-  <li>آیا نام <span dir="ltr">Service</span> برای ارتباط داخلی درست استفاده شده است؟</li>
-  <li>آیا <span dir="ltr">Environment Variable</span>ها مقدار درست دارند؟</li>
-  <li>آیا مسیر <span dir="ltr">Volume</span> یا <span dir="ltr">Bind Mount</span> درست است؟</li>
-  <li>وضعیت <span dir="ltr">Healthcheck</span> چیست؟</li>
-</ol>
 
-<a id="mistakes" name="mistakes"></a>
+سؤال‌های Debug:
 
-22. اشتباهات رایج
+</div>
 
-<code dir="ltr">localhost</code> برای <span dir="ltr">Service</span> دیگر
+```text
+Service ساخته شده؟
+Process اصلی Running است؟
+Application روی Port درست Listen می‌کند؟
+Port درست Publish شده؟
+Service Name درست است؟
+Environment Variable مقدار درست دارد؟
+Volume path درست است؟
+Healthcheck چه وضعیتی دارد؟
+```
 
-داخل <span dir="ltr">Backend</span>، <code dir="ltr">localhost</code> یعنی همان <span dir="ltr">Backend Container.</span> برای <span dir="ltr">Database</span> از نام <span dir="ltr">Service</span> مثل <code dir="ltr">database</code> استفاده کن.
+<div dir="rtl" align="right">
 
-<span dir="ltr">Database</span> بدون <span dir="ltr">Volume</span>
 
-اگر <span dir="ltr">Data</span> مهم است <span dir="ltr">Named Volume</span> تعریف کن.
+---
 
-تغییر <span dir="ltr">Source</span> و انتظار تغییر <span dir="ltr">Image</span>
+<a id="mistakes"></a>
+## 22. اشتباهات رایج
 
-<code dir="ltr">COPY</code> فقط در <span dir="ltr">Build</span> اجرا می‌شود. برای <span dir="ltr">Image</span> جدید:
+### `localhost` برای Service دیگر
 
+داخل Backend، `localhost` یعنی همان Backend Container. برای Database از نام Service مثل `database` استفاده کن.
+
+### Database بدون Volume
+
+اگر Data مهم است Named Volume تعریف کن.
+
+### تغییر Source و انتظار تغییر Image
+
+`COPY` فقط در Build اجرا می‌شود. برای Image جدید:
+
+</div>
+
+```bash
 docker compose up -d --build
+```
 
-یا در <span dir="ltr">Development</span> از <span dir="ltr">Bind Mount</span> استفاده کن.
+<div dir="rtl" align="right">
 
-<code dir="ltr">EXPOSE</code> را <span dir="ltr">Publish</span> فرض کردن
 
-<code dir="ltr">EXPOSE 4000</code> به معنی دسترسی <span dir="ltr">Host</span> نیست. در <span dir="ltr">Compose:</span>
+یا در Development از Bind Mount استفاده کن.
 
+### `EXPOSE` را Publish فرض کردن
+
+`EXPOSE 4000` به معنی دسترسی Host نیست. در Compose:
+
+</div>
+
+```yaml
 ports:
   - "8080:4000"
+```
 
-<span dir="ltr">Secret</span> داخل <span dir="ltr">YAML</span>
+<div dir="rtl" align="right">
+
+
+### Secret داخل YAML
 
 بد:
 
+</div>
+
+```yaml
 POSTGRES_PASSWORD: my-real-password
+```
+
+<div dir="rtl" align="right">
+
 
 بهتر:
 
-POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+</div>
 
-<span dir="ltr">IP</span> ثابت <span dir="ltr">Container</span>
+```yaml
+POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+```
+
+<div dir="rtl" align="right">
+
+
+### IP ثابت Container
 
 بد:
 
-<pre dir="ltr"><code>172.20.0.4</code></pre>
+</div>
+
+```text
+172.20.0.4
+```
+
+<div dir="rtl" align="right">
+
 
 خوب:
 
-<pre dir="ltr"><code>database</code></pre>
+</div>
 
-<code dir="ltr">docker compose down -v</code> بدون توجه
+```text
+database
+```
 
-ممکن است <span dir="ltr">Volume</span> و <span dir="ltr">Data</span> را حذف کند.
+<div dir="rtl" align="right">
 
-یک <span dir="ltr">Container</span> برای همه‌چیز
 
-در پروژه‌های چندبخشی، مسئولیت‌ها را معمولاً در <span dir="ltr">Service</span>های جدا نگه دار:
+### `docker compose down -v` بدون توجه
 
-<pre dir="ltr"><code>backend
+ممکن است Volume و Data را حذف کند.
+
+### یک Container برای همه‌چیز
+
+در پروژه‌های چندبخشی، مسئولیت‌ها را معمولاً در Serviceهای جدا نگه دار:
+
+</div>
+
+```text
+backend
 database
 reverse proxy
-cache</code></pre>
+cache
+```
 
-<a id="cheatsheet" name="cheatsheet"></a>
+<div dir="rtl" align="right">
 
-23. <span dir="ltr">Cheat Sheet</span>
 
-<span dir="ltr">Dockerfile</span>
+---
 
+<a id="cheatsheet"></a>
+## 23. Cheat Sheet
+
+### Dockerfile
+
+</div>
+
+```dockerfile
 FROM ...
 WORKDIR ...
 COPY ...
@@ -1231,15 +2142,29 @@ EXPOSE ...
 USER ...
 CMD [...]
 ENTRYPOINT [...]
+```
 
-<span dir="ltr">Build</span>
+<div dir="rtl" align="right">
 
+
+### Build
+
+</div>
+
+```bash
 docker build -t app:1.0.0 .
 docker build -f Dockerfile.dev -t app:dev .
 docker build --no-cache -t app:test .
+```
 
-<span dir="ltr">Compose</span>
+<div dir="rtl" align="right">
 
+
+### Compose
+
+</div>
+
+```bash
 docker compose config
 docker compose build
 docker compose up
@@ -1253,18 +2178,33 @@ docker compose restart backend
 docker compose stop
 docker compose start
 docker compose down
+```
+
+<div dir="rtl" align="right">
+
 
 با احتیاط:
 
+</div>
+
+```bash
 docker compose down -v
+```
 
-<a id="next" name="next"></a>
+<div dir="rtl" align="right">
 
-24. آمادگی برای سند <span dir="ltr">YAML</span>
 
-بعد از این سند باید بتوانی یک فایل <span dir="ltr">Compose</span> را از نظر معماری <span dir="ltr">Docker</span> بفهمی. سند سوم لایه‌ی <span dir="ltr">Syntax</span> و قواعد نوشتن <span dir="ltr">YAML</span> را جدا و منظم بررسی می‌کند:
+---
 
-<pre dir="ltr"><code>Mapping
+<a id="next"></a>
+## 24. آمادگی برای سند YAML
+
+بعد از این سند باید بتوانی یک فایل Compose را از نظر معماری Docker بفهمی. سند سوم لایه‌ی Syntax و قواعد نوشتن YAML را جدا و منظم بررسی می‌کند:
+
+</div>
+
+```text
+Mapping
 Sequence
 Indentation
 Quote
@@ -1276,6 +2216,9 @@ networks
 depends_on
 healthcheck
 Override
-Validation</code></pre>
+Validation
+```
+
+<div dir="rtl" align="right">
 
 </div>
