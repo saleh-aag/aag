@@ -42,7 +42,9 @@
 
 </div>
 
+```bash
 ssh USER@SERVER_IP
+```
 
 <div dir="rtl" align="right">
 
@@ -50,9 +52,11 @@ ssh USER@SERVER_IP
 
 </div>
 
+```bash
 whoami
 pwd
 ls -la
+```
 
 <div dir="rtl" align="right">
 
@@ -60,10 +64,12 @@ ls -la
 
 </div>
 
+```bash
 docker --version
 docker version
 docker ps
 docker images
+```
 
 <div dir="rtl" align="right">
 
@@ -71,7 +77,9 @@ docker images
 
 </div>
 
+```bash
 sudo systemctl status docker
+```
 
 <div dir="rtl" align="right">
 
@@ -79,7 +87,9 @@ sudo systemctl status docker
 
 </div>
 
+```bash
 sudo systemctl start docker
+```
 
 <div dir="rtl" align="right">
 
@@ -87,7 +97,9 @@ sudo systemctl start docker
 
 </div>
 
+```bash
 docker run --rm hello-world
+```
 
 <div dir="rtl" align="right">
 
@@ -95,6 +107,7 @@ docker run --rm hello-world
 
 </div>
 
+```text
 Linux Server
     |
     v
@@ -105,6 +118,7 @@ Docker Engine
     |
     v
 Ready for Labs
+```
 
 <div dir="rtl" align="right">
 
@@ -120,7 +134,9 @@ Ready for Labs
 
 </div>
 
+```bash
 docker run -it --name lab-ubuntu ubuntu bash
+```
 
 <div dir="rtl" align="right">
 
@@ -128,7 +144,9 @@ docker run -it --name lab-ubuntu ubuntu bash
 
 </div>
 
+```text
 root@CONTAINER_ID:/#
+```
 
 <div dir="rtl" align="right">
 
@@ -136,9 +154,11 @@ root@CONTAINER_ID:/#
 
 </div>
 
+```bash
 pwd
 ls -la
 cat /etc/os-release
+```
 
 <div dir="rtl" align="right">
 
@@ -146,7 +166,9 @@ cat /etc/os-release
 
 </div>
 
+```bash
 exit
+```
 
 <div dir="rtl" align="right">
 
@@ -154,8 +176,10 @@ exit
 
 </div>
 
+```bash
 docker ps
 docker ps -a
+```
 
 <div dir="rtl" align="right">
 
@@ -165,7 +189,9 @@ docker ps -a
 
 </div>
 
+```bash
 docker start lab-ubuntu
+```
 
 <div dir="rtl" align="right">
 
@@ -173,7 +199,9 @@ docker start lab-ubuntu
 
 </div>
 
+```bash
 docker exec lab-ubuntu ls -la /
+```
 
 <div dir="rtl" align="right">
 
@@ -181,7 +209,9 @@ docker exec lab-ubuntu ls -la /
 
 </div>
 
+```bash
 docker exec -it lab-ubuntu bash
+```
 
 <div dir="rtl" align="right">
 
@@ -189,8 +219,10 @@ docker exec -it lab-ubuntu bash
 
 </div>
 
+```bash
 exit
 docker stop lab-ubuntu
+```
 
 <div dir="rtl" align="right">
 
@@ -207,6 +239,7 @@ docker stop lab-ubuntu
 
 </div>
 
+```text
 Image
   |
   v
@@ -220,6 +253,7 @@ Container Stopped
   |
   v
 Container Started Again
+```
 
 <div dir="rtl" align="right">
 
@@ -235,8 +269,10 @@ Container Started Again
 
 </div>
 
+```bash
 docker start lab-ubuntu
 docker exec -it lab-ubuntu bash
+```
 
 <div dir="rtl" align="right">
 
@@ -244,9 +280,11 @@ docker exec -it lab-ubuntu bash
 
 </div>
 
+```bash
 cd /home
 printf 'hello from container\n' > note.txt
 cat note.txt
+```
 
 <div dir="rtl" align="right">
 
@@ -254,9 +292,11 @@ cat note.txt
 
 </div>
 
+```bash
 apt update
 apt install -y curl
 which curl
+```
 
 <div dir="rtl" align="right">
 
@@ -264,10 +304,12 @@ which curl
 
 </div>
 
+```bash
 exit
 docker stop lab-ubuntu
 docker start lab-ubuntu
 docker exec -it lab-ubuntu bash
+```
 
 <div dir="rtl" align="right">
 
@@ -275,8 +317,10 @@ docker exec -it lab-ubuntu bash
 
 </div>
 
+```bash
 cat /home/note.txt
 which curl
+```
 
 <div dir="rtl" align="right">
 
@@ -301,7 +345,9 @@ which curl
 
 </div>
 
+```bash
 docker commit lab-ubuntu lab-ubuntu-tools:1.0.0
+```
 
 <div dir="rtl" align="right">
 
@@ -309,7 +355,9 @@ docker commit lab-ubuntu lab-ubuntu-tools:1.0.0
 
 </div>
 
+```bash
 docker images lab-ubuntu-tools
+```
 
 <div dir="rtl" align="right">
 
@@ -317,7 +365,9 @@ docker images lab-ubuntu-tools
 
 </div>
 
+```bash
 docker tag lab-ubuntu-tools:1.0.0 lab-ubuntu-tools:stable
+```
 
 <div dir="rtl" align="right">
 
@@ -327,7 +377,9 @@ docker tag lab-ubuntu-tools:1.0.0 lab-ubuntu-tools:stable
 
 </div>
 
+```bash
 docker run -it --name lab-ubuntu-copy lab-ubuntu-tools:1.0.0 bash
+```
 
 <div dir="rtl" align="right">
 
@@ -335,8 +387,10 @@ docker run -it --name lab-ubuntu-copy lab-ubuntu-tools:1.0.0 bash
 
 </div>
 
+```bash
 cat /home/note.txt
 which curl
+```
 
 <div dir="rtl" align="right">
 
@@ -346,6 +400,7 @@ which curl
 
 </div>
 
+```text
 Container
    |
    v
@@ -356,6 +411,7 @@ Docker Commit
    |
    v
 New Image
+```
 
 <div dir="rtl" align="right">
 
@@ -371,8 +427,10 @@ New Image
 
 </div>
 
+```bash
 mkdir -p ~/labs/flask-demo
 cd ~/labs/flask-demo
+```
 
 <div dir="rtl" align="right">
 
@@ -380,7 +438,9 @@ cd ~/labs/flask-demo
 
 </div>
 
+```bash
 python3 -m venv venv
+```
 
 <div dir="rtl" align="right">
 
@@ -388,8 +448,10 @@ python3 -m venv venv
 
 </div>
 
+```bash
 sudo apt update
 sudo apt install -y python3-venv
+```
 
 <div dir="rtl" align="right">
 
@@ -397,7 +459,9 @@ sudo apt install -y python3-venv
 
 </div>
 
+```bash
 source venv/bin/activate
+```
 
 <div dir="rtl" align="right">
 
@@ -405,7 +469,9 @@ source venv/bin/activate
 
 </div>
 
+```bash
 pip install flask
+```
 
 <div dir="rtl" align="right">
 
@@ -413,9 +479,11 @@ pip install flask
 
 </div>
 
+```bash
 python --version
 pip --version
 pip show flask
+```
 
 <div dir="rtl" align="right">
 
@@ -423,8 +491,10 @@ pip show flask
 
 </div>
 
+```bash
 pip freeze > requirements.txt
 cat requirements.txt
+```
 
 <div dir="rtl" align="right">
 
@@ -432,6 +502,7 @@ cat requirements.txt
 
 </div>
 
+```bash
 from flask import Flask
 
 app = Flask(__name__)
@@ -442,6 +513,7 @@ def hello():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4000)
+```
 
 <div dir="rtl" align="right">
 
@@ -449,7 +521,9 @@ if __name__ == "__main__":
 
 </div>
 
+```bash
 python app.py
+```
 
 <div dir="rtl" align="right">
 
@@ -457,7 +531,9 @@ python app.py
 
 </div>
 
+```bash
 curl http://127.0.0.1:4000
+```
 
 <div dir="rtl" align="right">
 
@@ -465,7 +541,9 @@ curl http://127.0.0.1:4000
 
 </div>
 
+```bash
 Hello World
+```
 
 <div dir="rtl" align="right">
 
@@ -473,7 +551,9 @@ Hello World
 
 </div>
 
+```bash
 deactivate
+```
 
 <div dir="rtl" align="right">
 
@@ -483,7 +563,9 @@ deactivate
 
 </div>
 
+```bash
 docker run --rm -it ubuntu bash
+```
 
 <div dir="rtl" align="right">
 
@@ -491,7 +573,9 @@ docker run --rm -it ubuntu bash
 
 </div>
 
+```bash
 python
+```
 
 <div dir="rtl" align="right">
 
@@ -499,7 +583,9 @@ python
 
 </div>
 
+```bash
 python: command not found
+```
 
 <div dir="rtl" align="right">
 
@@ -507,7 +593,9 @@ python: command not found
 
 </div>
 
+```bash
 docker run --rm -it python:3.11 python --version
+```
 
 <div dir="rtl" align="right">
 
@@ -525,10 +613,12 @@ docker run --rm -it python:3.11 python --version
 
 </div>
 
+```bash
 flask-demo/
 ├── app.py
 ├── requirements.txt
 └── Dockerfile
+```
 
 <div dir="rtl" align="right">
 
@@ -536,6 +626,7 @@ flask-demo/
 
 </div>
 
+```bash
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -548,6 +639,7 @@ COPY app.py .
 EXPOSE 4000
 
 CMD ["python", "app.py"]
+```
 
 <div dir="rtl" align="right">
 
@@ -567,7 +659,9 @@ CMD ["python", "app.py"]
 
 </div>
 
+```bash
 docker build -t flask-demo:1.0 .
+```
 
 <div dir="rtl" align="right">
 
@@ -577,7 +671,9 @@ docker build -t flask-demo:1.0 .
 
 </div>
 
+```bash
 docker images flask-demo
+```
 
 <div dir="rtl" align="right">
 
@@ -585,7 +681,9 @@ docker images flask-demo
 
 </div>
 
+```bash
 docker run --rm -d --name flask-web -p 4000:4000 flask-demo:1.0
+```
 
 <div dir="rtl" align="right">
 
@@ -593,7 +691,9 @@ docker run --rm -d --name flask-web -p 4000:4000 flask-demo:1.0
 
 </div>
 
+```bash
 curl http://127.0.0.1:4000
+```
 
 <div dir="rtl" align="right">
 
@@ -601,7 +701,9 @@ curl http://127.0.0.1:4000
 
 </div>
 
+```bash
 docker logs flask-web
+```
 
 <div dir="rtl" align="right">
 
@@ -609,7 +711,9 @@ docker logs flask-web
 
 </div>
 
+```bash
 docker stop flask-web
+```
 
 <div dir="rtl" align="right">
 
@@ -617,6 +721,7 @@ docker stop flask-web
 
 </div>
 
+```text
 app.py
   |
   v
@@ -633,6 +738,7 @@ Container
   |
   v
 Flask :4000
+```
 
 <div dir="rtl" align="right">
 
@@ -648,8 +754,10 @@ Flask :4000
 
 </div>
 
+```bash
 mkdir -p ~/labs/node-demo
 cd ~/labs/node-demo
+```
 
 <div dir="rtl" align="right">
 
@@ -657,9 +765,11 @@ cd ~/labs/node-demo
 
 </div>
 
+```bash
 docker pull node:22-slim
 docker run --rm node:22-slim node --version
 docker run --rm node:22-slim npm --version
+```
 
 <div dir="rtl" align="right">
 
@@ -667,7 +777,9 @@ docker run --rm node:22-slim npm --version
 
 </div>
 
+```bash
 docker run --rm -it node:22-slim bash
+```
 
 <div dir="rtl" align="right">
 
@@ -675,7 +787,9 @@ docker run --rm -it node:22-slim bash
 
 </div>
 
+```bash
 exit
+```
 
 <div dir="rtl" align="right">
 
@@ -683,6 +797,7 @@ exit
 
 </div>
 
+```bash
 {
   "name": "node-demo",
   "version": "1.0.0",
@@ -691,6 +806,7 @@ exit
     "express": "^5.1.0"
   }
 }
+```
 
 <div dir="rtl" align="right">
 
@@ -698,6 +814,7 @@ exit
 
 </div>
 
+```bash
 const express = require("express");
 
 const app = express();
@@ -709,6 +826,7 @@ app.get("/", (req, res) => {
 app.listen(3000, "0.0.0.0", () => {
   console.log("Listening on port 3000");
 });
+```
 
 <div dir="rtl" align="right">
 
@@ -716,6 +834,7 @@ app.listen(3000, "0.0.0.0", () => {
 
 </div>
 
+```bash
 FROM node:22-slim
 
 WORKDIR /app
@@ -728,6 +847,7 @@ COPY app.js .
 EXPOSE 3000
 
 CMD ["node", "app.js"]
+```
 
 <div dir="rtl" align="right">
 
@@ -737,7 +857,9 @@ CMD ["node", "app.js"]
 
 </div>
 
+```bash
 docker build -t node-demo:1.0 .
+```
 
 <div dir="rtl" align="right">
 
@@ -745,7 +867,9 @@ docker build -t node-demo:1.0 .
 
 </div>
 
+```bash
 docker run --rm -d --name node-web -p 2000:3000 node-demo:1.0
+```
 
 <div dir="rtl" align="right">
 
@@ -753,7 +877,9 @@ docker run --rm -d --name node-web -p 2000:3000 node-demo:1.0
 
 </div>
 
+```bash
 curl http://127.0.0.1:2000
+```
 
 <div dir="rtl" align="right">
 
@@ -773,7 +899,9 @@ curl http://127.0.0.1:2000
 
 </div>
 
+```bash
 docker run --rm -it node-demo:1.0 bash
+```
 
 <div dir="rtl" align="right">
 
@@ -781,7 +909,9 @@ docker run --rm -it node-demo:1.0 bash
 
 </div>
 
+```bash
 node app.js
+```
 
 <div dir="rtl" align="right">
 
@@ -799,9 +929,11 @@ node app.js
 
 </div>
 
+```bash
 app.get("/", (req, res) => {
   res.send("Bye Bye");
 });
+```
 
 <div dir="rtl" align="right">
 
@@ -819,9 +951,11 @@ app.get("/", (req, res) => {
 
 </div>
 
+```bash
 docker run --rm -it -p 2000:3000 \
   -v "$PWD":/home/new_app \
   node-demo:1.0 bash
+```
 
 <div dir="rtl" align="right">
 
@@ -829,7 +963,9 @@ docker run --rm -it -p 2000:3000 \
 
 </div>
 
+```bash
 cat /app/app.js
+```
 
 <div dir="rtl" align="right">
 
@@ -837,7 +973,9 @@ cat /app/app.js
 
 </div>
 
+```bash
 cat /home/new_app/app.js
+```
 
 <div dir="rtl" align="right">
 
@@ -847,7 +985,9 @@ cat /home/new_app/app.js
 
 </div>
 
+```bash
 node /app/app.js
+```
 
 <div dir="rtl" align="right">
 
@@ -855,7 +995,9 @@ node /app/app.js
 
 </div>
 
+```bash
 curl http://127.0.0.1:2000
+```
 
 <div dir="rtl" align="right">
 
@@ -863,7 +1005,9 @@ curl http://127.0.0.1:2000
 
 </div>
 
+```text
 NODE_PATH=/app/node_modules node /home/new_app/app.js
+```
 
 <div dir="rtl" align="right">
 
@@ -871,7 +1015,9 @@ NODE_PATH=/app/node_modules node /home/new_app/app.js
 
 </div>
 
+```bash
 curl http://127.0.0.1:2000
+```
 
 <div dir="rtl" align="right">
 
@@ -901,8 +1047,10 @@ curl http://127.0.0.1:2000
 
 </div>
 
+```bash
 mkdir -p ~/labs/copy-vs-mount
 cd ~/labs/copy-vs-mount
+```
 
 <div dir="rtl" align="right">
 
@@ -910,12 +1058,14 @@ cd ~/labs/copy-vs-mount
 
 </div>
 
+```bash
 #include <stdio.h>
 
 int main(void) {
     printf("hello-world\n");
     return 0;
 }
+```
 
 <div dir="rtl" align="right">
 
@@ -923,7 +1073,9 @@ int main(void) {
 
 </div>
 
+```bash
 docker run -it -d --name copy-lab ubuntu bash
+```
 
 <div dir="rtl" align="right">
 
@@ -931,7 +1083,9 @@ docker run -it -d --name copy-lab ubuntu bash
 
 </div>
 
+```bash
 docker cp wilson.c copy-lab:/home/wilson.c
+```
 
 <div dir="rtl" align="right">
 
@@ -939,7 +1093,9 @@ docker cp wilson.c copy-lab:/home/wilson.c
 
 </div>
 
+```bash
 docker run -it -d --name mount-lab -v "$PWD":/tmp gcc bash
+```
 
 <div dir="rtl" align="right">
 
@@ -947,7 +1103,9 @@ docker run -it -d --name mount-lab -v "$PWD":/tmp gcc bash
 
 </div>
 
+```bash
 docker exec mount-lab ls -la /tmp
+```
 
 <div dir="rtl" align="right">
 
@@ -955,7 +1113,9 @@ docker exec mount-lab ls -la /tmp
 
 </div>
 
+```bash
 docker exec -w /tmp mount-lab gcc -o main wilson.c
+```
 
 <div dir="rtl" align="right">
 
@@ -963,7 +1123,9 @@ docker exec -w /tmp mount-lab gcc -o main wilson.c
 
 </div>
 
+```bash
 ls -la
+```
 
 <div dir="rtl" align="right">
 
@@ -973,7 +1135,9 @@ ls -la
 
 </div>
 
+```bash
 docker exec copy-lab cat /home/wilson.c
+```
 
 <div dir="rtl" align="right">
 
@@ -981,7 +1145,9 @@ docker exec copy-lab cat /home/wilson.c
 
 </div>
 
+```bash
 docker exec mount-lab cat /tmp/wilson.c
+```
 
 <div dir="rtl" align="right">
 
@@ -997,6 +1163,7 @@ docker exec mount-lab cat /tmp/wilson.c
 
 </div>
 
+```text
 Host File
    |
    v
@@ -1012,6 +1179,7 @@ Bind Mount
    |
    v
 Shared View Inside Container
+```
 
 <div dir="rtl" align="right">
 
@@ -1027,7 +1195,9 @@ Shared View Inside Container
 
 </div>
 
+```bash
 docker images lab-ubuntu-tools
+```
 
 <div dir="rtl" align="right">
 
@@ -1035,7 +1205,9 @@ docker images lab-ubuntu-tools
 
 </div>
 
+```bash
 docker save lab-ubuntu-tools:1.0.0 -o lab-image.tar
+```
 
 <div dir="rtl" align="right">
 
@@ -1043,7 +1215,9 @@ docker save lab-ubuntu-tools:1.0.0 -o lab-image.tar
 
 </div>
 
+```bash
 ls -lh lab-image.tar
+```
 
 <div dir="rtl" align="right">
 
@@ -1051,7 +1225,9 @@ ls -lh lab-image.tar
 
 </div>
 
+```bash
 docker load -i lab-image.tar
+```
 
 <div dir="rtl" align="right">
 
@@ -1059,6 +1235,7 @@ docker load -i lab-image.tar
 
 </div>
 
+```text
 Image
   |
   v
@@ -1072,6 +1249,7 @@ Load
   |
   v
 Image
+```
 
 <div dir="rtl" align="right">
 
@@ -1079,7 +1257,9 @@ Image
 
 </div>
 
+```bash
 docker export lab-ubuntu -o lab-container.tar
+```
 
 <div dir="rtl" align="right">
 
@@ -1087,7 +1267,9 @@ docker export lab-ubuntu -o lab-container.tar
 
 </div>
 
+```bash
 docker import lab-container.tar lab-imported:1.0
+```
 
 <div dir="rtl" align="right">
 
@@ -1095,6 +1277,7 @@ docker import lab-container.tar lab-imported:1.0
 
 </div>
 
+```text
 Container Filesystem
        |
        v
@@ -1108,6 +1291,7 @@ Import
        |
        v
 New Image
+```
 
 <div dir="rtl" align="right">
 
@@ -1115,7 +1299,9 @@ New Image
 
 </div>
 
+```bash
 docker run -it lab-imported:1.0
+```
 
 <div dir="rtl" align="right">
 
@@ -1123,7 +1309,9 @@ docker run -it lab-imported:1.0
 
 </div>
 
+```bash
 docker run -it lab-imported:1.0 bash
+```
 
 <div dir="rtl" align="right">
 
@@ -1147,8 +1335,10 @@ docker run -it lab-imported:1.0 bash
 
 </div>
 
+```bash
 mkdir -p ~/labs/compose-demo
 cd ~/labs/compose-demo
+```
 
 <div dir="rtl" align="right">
 
@@ -1156,11 +1346,13 @@ cd ~/labs/compose-demo
 
 </div>
 
+```yaml
 services:
   web:
     image: nginx:alpine
     ports:
       - "8080:80"
+```
 
 <div dir="rtl" align="right">
 
@@ -1168,7 +1360,9 @@ services:
 
 </div>
 
+```bash
 docker compose config
+```
 
 <div dir="rtl" align="right">
 
@@ -1176,7 +1370,9 @@ docker compose config
 
 </div>
 
+```bash
 docker compose up -d
+```
 
 <div dir="rtl" align="right">
 
@@ -1184,7 +1380,9 @@ docker compose up -d
 
 </div>
 
+```bash
 docker compose ps
+```
 
 <div dir="rtl" align="right">
 
@@ -1192,7 +1390,9 @@ docker compose ps
 
 </div>
 
+```bash
 curl http://127.0.0.1:8080
+```
 
 <div dir="rtl" align="right">
 
@@ -1200,7 +1400,9 @@ curl http://127.0.0.1:8080
 
 </div>
 
+```bash
 docker compose logs -f
+```
 
 <div dir="rtl" align="right">
 
@@ -1208,7 +1410,9 @@ docker compose logs -f
 
 </div>
 
+```bash
 docker compose down
+```
 
 <div dir="rtl" align="right">
 
@@ -1218,7 +1422,9 @@ docker compose down
 
 </div>
 
+```text
 POSTGRES_PASSWORD=CHANGE_ME
+```
 
 <div dir="rtl" align="right">
 
@@ -1226,6 +1432,7 @@ POSTGRES_PASSWORD=CHANGE_ME
 
 </div>
 
+```yaml
 services:
   backend:
     build: ./backend
@@ -1244,6 +1451,7 @@ services:
 
 volumes:
   db-data:
+```
 
 <div dir="rtl" align="right">
 
@@ -1283,6 +1491,7 @@ volumes:
 
 </div>
 
+```text
 Source Code
     |
     v
@@ -1314,6 +1523,7 @@ Host File
     +--> COPY during Build --> Image Snapshot
     |
     +--> Bind Mount --------> Live Container View
+```
 
 <div dir="rtl" align="right">
 
@@ -1321,6 +1531,7 @@ Host File
 
 </div>
 
+```text
 Dockerfile
     |
     v
@@ -1334,6 +1545,7 @@ Container
     |
     v
 Network + Volume + Environment
+```
 
 <div dir="rtl" align="right">
 
